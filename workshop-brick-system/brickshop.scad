@@ -12,7 +12,7 @@
 
 /* [Part] */
 // Which part to build
-part = "drawer_brick"; // [drawer_brick:Drawer brick (shell with mesh top), drawer:Drawer (slides into the drawer brick), storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
+part = "drawer_brick"; // [drawer_brick:Drawer brick (shell with mesh top), drawer:Drawer (slides into the drawer brick), nameplate:Drawer nameplate (slides into the drawer front),storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
 
 /* [Style] */
 // classic = smooth LEGO, rugged = armoured corners, brick seams, grip flutes
@@ -33,6 +33,14 @@ dr_mesh_top = true;
 dr_title = "SCREWS & BOLTS";
 // Drawer title text height
 dr_title_size = 12;
+// Slide-in nameplate holder on the drawer front (replaces the engraved title)
+dr_nameplate = true;
+// Nameplate channel height
+np_h = 17;
+// Nameplate text (part = nameplate)
+np_text = "SCREWS & BOLTS";
+// Nameplate text height
+np_text_size = 9;
 // Drawer pull: a giant LEGO stud knob, or a finger notch
 dr_handle = "stud"; // [stud, notch]
 // Drawer divider walls across the width (0 = none)
@@ -174,6 +182,7 @@ if (part == "drawer_brick") {
     else drawer_brick(dr_cols, dr_rows, dr_plates);
 }
 else if (part == "drawer") drawer(dr_cols, dr_rows, dr_plates);
+else if (part == "nameplate") nameplate();
 else if (part == "storage_box") storage_box(box_cols, box_rows, box_plates);
 else if (part == "box_lid") box_lid(box_cols, box_rows);
 else if (part == "brick") brick(brick_cols, brick_rows, brick_plates);
@@ -304,15 +313,15 @@ module drawer_brick(cols, rows, plates) {
         chamfered_block(W, D, H);
         // drawer cavity, open at the front (-y)
         translate([0, -w/2 - 1, BASE_T]) linear_extrude(H - TOP_T - BASE_T)
-            square([W - 2*w, D - w + 2], center = true);
+            square([drawer_cavity_w(W), D - w + 2], center = true);
         sockets(cols, rows);
         rugged_marks(W, D, H);
         if (dr_mesh_top)
             translate([0, 0, H - TOP_T - 1]) linear_extrude(TOP_T + 2)
-                offset(delta = 0.15) offset(delta = -0.15) difference() {
+                offset(delta = 0.3) offset(delta = -0.3) difference() {
                     square([W - 2*frame, D - 2*frame], center = true);
                     hex_mesh_2d(W - 2*frame, D - 2*frame);
-                    for (x = xs, y = ys) translate([x, y]) circle(d = STUD_D);
+                    for (x = xs, y = ys) translate([x, y]) circle(d = STUD_D + 1);
                 }
     }
     for (x = xs, y = ys) translate([x, y, H - 0.01])
@@ -322,6 +331,10 @@ module drawer_brick(cols, rows, plates) {
         }
 }
 
+// Drawer opening width. Rugged corners are chamfered, so the opening is
+// narrowed to keep a full wall behind the chamfer.
+function drawer_cavity_w(W) = W - 2*(style == "rugged" ? rug_chamfer + box_wall : box_wall);
+
 // Open tray that slides into the drawer brick. The front is flush with the
 // brick face and carries a finger notch and the engraved title.
 module drawer(cols, rows, plates) {
@@ -329,7 +342,7 @@ module drawer(cols, rows, plates) {
     D = bsize(rows);
     H = plates * PLATE_H;
     w = box_wall;
-    dw = W - 2*w - 2*dr_clear;            // outside width
+    dw = drawer_cavity_w(W) - 2*dr_clear;  // outside width
     dh = H - TOP_T - BASE_T - 2*dr_clear;  // outside height
     dl = D - w - 2*dr_clear;               // front face to back
     t = 1.6;                               // side / back / floor
@@ -337,7 +350,8 @@ module drawer(cols, rows, plates) {
     notch = dr_handle == "notch";
     notch_r = min(15, dh/2 - 2);
     knob_d = min(24, dh*0.45);
-    knob_z = dh*0.62;
+    np_top = NP_ZB + np_h + NP_RAIL;       // top of the nameplate holder
+    knob_z = dr_nameplate ? max(dh*0.62, np_top + 1 + knob_d/2) : dh*0.62;
     title_z = notch ? (dh - notch_r)/2 : (knob_z - knob_d/2)/2;
     title_room = notch ? dh - notch_r : knob_z - knob_d/2;
     difference() {
@@ -346,7 +360,7 @@ module drawer(cols, rows, plates) {
         translate([0, face/2 - t/2, t + dh/2]) cube([dw - 2*t, dl - face - t, dh], center = true);
         // finger notch in the front
         if (notch) translate([0, -dl/2 - 1, dh]) rotate([-90, 0, 0]) cylinder(r = notch_r, h = face + 2);
-        if (len(dr_title) > 0)
+        if (!dr_nameplate && len(dr_title) > 0)
             translate([0, -dl/2 + 0.6, title_z]) rotate([90, 0, 0])
                 linear_extrude(1) text(dr_title, size = min(dr_title_size, title_room * 0.6), font = font, halign = "center", valign = "center");
     }
@@ -355,6 +369,7 @@ module drawer(cols, rows, plates) {
         cylinder(d = knob_d, h = 11);
         translate([0, 0, 11 - 0.01]) cylinder(d1 = knob_d, d2 = knob_d - 2, h = 1);
     }
+    if (dr_nameplate) translate([0, -dl/2 + 0.01, 0]) nameplate_holder(np_length(dw));
     // dividers
     ih = dh - t - 3;
     translate([0, 0, t - 0.01]) {
@@ -363,6 +378,51 @@ module drawer(cols, rows, plates) {
         if (dr_div_y > 0) for (k = [1:dr_div_y])
             translate([0, -dl/2 + face + k*(dl - face - t)/(dr_div_y + 1), ih/2]) cube([dw - 2*t + 0.02, RIB, ih], center = true);
     }
+}
+
+// ---------------------------------------------------------- nameplate
+// Label holder on the drawer front: two rails with lips form a channel that
+// is closed on the left and open on the right. The nameplate slides in from
+// the right, so a drawer can be relabelled when it's reused. A strip of
+// paper behind a clear plate works too.
+NP_ZB = 3;        // channel bottom above the drawer floor
+NP_LIP = 1.5;     // how far each lip covers the plate edge
+NP_DEPTH = 2;     // channel depth (plate is 1.5 thick)
+NP_RAIL = 2;      // rail height above/below the channel
+NP_OUT = 3.2;     // how far the rails stand out from the drawer front
+
+function np_length(dw) = dw - 24;
+
+// Built on the drawer front: origin at the front face, outward is -y.
+module nameplate_holder(len_) {
+    zb = NP_ZB;
+    zt = NP_ZB + np_h;
+    x0 = -len_/2 - 2;            // closed end (stop)
+    span = len_ + 3;
+    // cross-sections in (outward, z)
+    bottom = [[-0.01, zb - NP_RAIL], [NP_OUT, zb - NP_RAIL], [NP_OUT, zb + NP_LIP],
+              [NP_DEPTH, zb + NP_LIP], [NP_DEPTH, zb], [-0.01, zb]];
+    // top lip underside is chamfered 45 deg so it prints without support
+    top = [[-0.01, zt], [NP_DEPTH, zt], [NP_DEPTH, zt - 0.3], [NP_OUT, zt - NP_LIP],
+           [NP_OUT, zt + NP_RAIL], [-0.01, zt + NP_RAIL]];
+    for (prof = [bottom, top])
+        translate([x0, 0, 0]) rotate([90, 0, 90]) linear_extrude(span) mirror([1, 0]) polygon(prof);
+    // end stop on the left
+    translate([x0, -NP_OUT, zb - NP_RAIL]) cube([2, NP_OUT + 0.01, np_h + 2*NP_RAIL]);
+}
+
+// The plate itself. Print flat, text up; change filament at the text layer
+// for two colours.
+module nameplate() {
+    dw = drawer_cavity_w(bsize(dr_cols)) - 2*dr_clear;
+    L = np_length(dw) - 0.5;
+    h = np_h - 0.6;
+    window = np_h - 2*NP_LIP;
+    cube([L, h, 1.5]);
+    translate([L/2, h/2, 1.5 - 0.01]) linear_extrude(0.4)
+        text(np_text, size = min(np_text_size, window * 0.65), font = font, halign = "center", valign = "center");
+    // finger tab: the end that sticks out of the open side for pulling it out
+    translate([L - 0.01, 0, 0]) cube([5, h, 1.5]);
 }
 
 // ---------------------------------------------------------- storage brick

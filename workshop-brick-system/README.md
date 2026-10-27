@@ -13,6 +13,9 @@ That's the same scale as the LEGO storage box shells, so your shells and bins sn
 
 | Part | What it is | Default size | Print |
 |---|---|---|---|
+| `drawer_brick` | Drawer unit: LEGO shell with studs on top, sockets underneath, and a hex-mesh top between hollow ring studs (the mesh lid is built in). Stack as many as you like; every drawer still opens without moving the others. | 4×4, 1 brick | On its back, opening up (the default layout) |
+| `drawer` | Slides into the drawer brick. A giant stud knob is the pull, a nameplate holder sits on the front, and dividers are optional. Holds 16 screw-box modules with 23 mm headroom. | 4×4 | Right side up |
+| `nameplate` | Swappable drawer label. It slides into the holder from the right, so a reused drawer can be relabelled. Text is raised for two-colour printing. A paper strip behind a clear plate also works. | fits the drawer width | Flat, text up |
 | `storage_box` | Open-top storage brick. Holds 4×4 screw-box modules. Optional dividers. Title engraved on the front. | 4×4, 1 brick | Right side up |
 | `box_lid` | Stud lid. Hex mesh between hollow ring studs, title engraved on the front edge. Locks onto the box rim, and another box stacks on its studs. | 4×4 | Right side up, flat |
 | `brick` | Plain brick or plate in any size. Use it for baseplates, risers and spacers. | 2×4, 1 brick | Right side up |
@@ -26,12 +29,16 @@ That's the same scale as the LEGO storage box shells, so your shells and bins sn
 
 None of the parts need supports. Closed bricks have LEGO-style internal ribs and tubes, so their tops bridge only short gaps.
 
-![exploded](images/exploded.png)
+![drawer open](images/drawer-open.png)
+
+![nameplates](images/nameplates.png)
 
 ## Customising (no code needed)
 
 Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld customizer.
 
+- **Nameplates:** `np_text`, `np_text_size`, `np_h`. Set `dr_nameplate = false` to engrave `dr_title` on the drawer front instead.
+- **Drawers:** `dr_cols`, `dr_rows`, `dr_plates`, `dr_handle` (`stud` or `notch`), `dr_div_x`, `dr_div_y`, `dr_mesh_top`.
 - **Any size:** `box_cols`, `box_rows`, `box_plates`, and `brick_cols`, `brick_rows`, `brick_plates`.
 - **Titles:** `box_title`, `lid_title`, `tile_text1`. `lid_plaque = true` gives a raised title plaque instead, for the top lid of a stack only.
 - **Tools:** `tb_tools` is plain text, for example `hex:2.5, round:8:PH2, square:6.35:1/4`.
@@ -52,6 +59,10 @@ Every joint was tested with mesh booleans, in both styles, against the original 
 
 | Joint | Side play |
 |---|---|
+| Drawer inside drawer brick | 0.40 mm per side |
+| Nameplate in its holder | slides out the open end; held by the lips and the end stop in every other direction |
+| Drawer brick stacked on drawer brick | 0.50 mm |
+| Hex key brick / title tile / your LEGO box shell on a drawer brick | 0.50 / 0.50 / 0.65 mm |
 | Stud lid on storage brick rim (tongue in groove) | 0.25–0.35 mm |
 | Storage brick stacked on a stud lid | 0.45 mm |
 | Driver / bit brick on a stud lid | 0.50 mm |
@@ -60,6 +71,7 @@ Every joint was tested with mesh booleans, in both styles, against the original 
 | Your LEGO box shell on a stud lid | 0.65 mm |
 | Storage brick on your LEGO box shell studs | 0.50 mm |
 | Neighbouring bricks | 0.40 mm gap |
+| 16 screw boxes in a 4×4 drawer | fit (209.6 mm inside, 197.6 mm rugged), 23 mm headroom |
 | 16 screw boxes inside a 4×4 storage brick | fit, 27.5 mm headroom under the lid |
 | Lamp bayonet vs LED kit shade | 96 % of 6,840 surface samples within 0.3 mm |
 
