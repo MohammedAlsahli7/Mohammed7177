@@ -1,79 +1,70 @@
-# Brickshop: giant-LEGO workshop storage
+# Brickshop: all-LEGO workshop storage
 
-One parametric OpenSCAD file (`brickshop.scad`) that ties together:
+One parametric OpenSCAD file (`brickshop.scad`). Every part is a giant LEGO brick:
+- studs on top, sockets underneath
+- 55 mm stud pitch
+- 70 mm brick height (3 plates of 23.3 mm)
 
-- **Gridock** stackable trays (220 × 220 mm)
-- **LEGO storage box** shells and bins (55 mm stud grid)
-- **Modular screw box** (45 mm modules)
-- the **LED lamp kit** base
+That's the same scale as the LEGO storage box shells, so your shells and bins snap into the same system.
 
-The new parts are a mesh lid with studs and a title, snap-on title tiles, tool bricks and a LEGO-brick lamp.
+![assembled](images/assembled-classic.png)
 
-![exploded view](images/exploded.png)
+## Parts (pick with `part =`)
 
-## The trick: one 55 mm grid
+| Part | What it is | Default size | Print |
+|---|---|---|---|
+| `storage_box` | Open-top storage brick. Holds 4×4 screw-box modules. Optional dividers. Title engraved on the front. | 4×4, 1 brick | Right side up |
+| `box_lid` | Stud lid. Hex mesh between hollow ring studs, title engraved on the front edge. Locks onto the box rim, and another box stacks on its studs. | 4×4 | Right side up, flat |
+| `brick` | Plain brick or plate in any size. Use it for baseplates, risers and spacers. | 2×4, 1 brick | Right side up |
+| `hex_key_brick` | Hex keys 1.5–10 mm, short arm in the stud, long arm up. Size engraved on each stud. | 3×3, 1 brick | Right side up |
+| `driver_brick` | 8 screwdrivers (PH0–PH3, SL3–SL6.5). The shaft drops through the stud and the handle rests on it. | 4×2, 2 bricks | Right side up |
+| `bit_brick` | 16 × 1/4" bits, 4 per stud. | 4×1, 2 plates | Right side up |
+| `tool_brick` | Your own tool list (see below). Auto-sizes to fit. | any | Right side up |
+| `title_tile` | Flat LEGO tile with sockets. Press it onto any studs to label anything. | 4×1 | Right side up |
+| `lamp` + `lamp_stud` | 2×2 lamp brick. Twist-locks onto your LED lamp kit base. Press 4 stud caps into the top and they glow. | 2×2 | Lamp upside down, studs closed side down |
+| `gridock_lid` | Optional. Turns a Gridock tray into a LEGO base. | 4×4 | Right side up |
 
-| System | Size | On the 55 grid |
-|---|---|---|
-| Gridock tray | 220 mm | 4 × 4 studs |
-| LEGO storage box shell | 55 mm cells, 34 mm studs, 35 mm sockets | native |
-| Screw box module | 45 mm pitch, 30 mm tall | 4 × 4 = 182.8 mm fits inside a Gridock tray (200.4 mm inside) |
-| Brickshop parts | 55 mm cells | native, same stud/socket sizes as the LEGO box |
+None of the parts need supports. Closed bricks have LEGO-style internal ribs and tubes, so their tops bridge only short gaps.
 
-So the stack goes: **Gridock trays of screw boxes → mesh lid (studs on top) → LEGO box shells and tool bricks → title tiles on any studs.**
+![exploded](images/exploded.png)
 
-## Parts
+## Customising (no code needed)
 
-| Part (`part =`) | What it is | Print |
-|---|---|---|
-| `mesh_lid` | Replaces the Gridock top plate. Hex mesh, ring studs and a raised title plaque. Its foot copies the tray's own bevel, so it nests and self-centres on the rim. | Right side up, no supports |
-| `title_tile` | Flat giant tile with sockets underneath. Press it onto any stud row to relabel a stack. | Right side up. Swap filament at the text layer for 2-colour text. |
-| `hex_key_brick` | 1×4, 2 bricks tall. Hex holes for L-keys 1.5–10 mm. The long arm goes down, the short arm rests on top. Sizes are engraved. | Upside down (top on the bed), no supports |
-| `driver_brick` | 2×4, 2 bricks tall. PH0–PH3, PZ2 and SL3–SL8 screwdrivers. | Upside down |
-| `bit_brick` | 1×4, 1 brick tall. 16 holes for 1/4" hex bits. | Upside down |
-| `tool_brick` | Your own layout. See "Customising". | Upside down |
-| `lamp` | 2×2 giant brick lampshade. The collar is the LED kit's twist-lock (bayonet) re-modelled from measurements. | Upside down (top on the bed), no supports. White or translucent PLA. |
-| `lamp_stud` | Hollow glowing stud cap that presses into the lamp top. Print 4. | Closed side down |
+Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld customizer.
 
-Ready-made STLs are in `stl/classic`, `stl/rugged` and `stl/common`.
-
-## Styles
-
-`style = "classic"` gives smooth LEGO bricks. `style = "rugged"` gives armoured chamfered corners, brick seams every 70 mm and grip flutes on the ends. Fit is identical in both.
+- **Any size:** `box_cols`, `box_rows`, `box_plates`, and `brick_cols`, `brick_rows`, `brick_plates`.
+- **Titles:** `box_title`, `lid_title`, `tile_text1`. `lid_plaque = true` gives a raised title plaque instead, for the top lid of a stack only.
+- **Tools:** `tb_tools` is plain text, for example `hex:2.5, round:8:PH2, square:6.35:1/4`.
+  - Tools fill the studs back-left to front-right.
+  - `tb_per_stud` = 1, 2 or 4 tools per stud.
+  - `tb_depth` = how deep each hole goes.
+  - `tb_plates` = brick height.
+- **Look:** `style = "classic"` (smooth LEGO) or `"rugged"` (armoured corners, brick seams, grip flutes).
+- **Fit:** `fit_gap`, `hole_clear`, `stud_plug_fit`.
 
 | classic | rugged |
 |---|---|
 | ![classic](images/assembled-classic.png) | ![rugged](images/assembled-rugged.png) |
 
-## Customising (no code needed)
-
-Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld customizer:
-
-- **Tool holes** are plain text, one line per row: `shape:size[:label]`, comma separated.
-  Example: `hex:2.5, hex:3, round:8:PH2, square:6.35:1/4 bit`
-- **Brick size**: `tb_cols`, `tb_rows`, `tb_height` (in bricks of 70 mm). Long-series hex keys need `tb_height = 3`.
-- **Lid**: `lid_title`, `lid_stud_rows` (4 = full stud grid, 3 = front row becomes the title plaque).
-- **Lamp**: `lamp_cols`, `lamp_rows`, `lamp_h`, and `collar_drop` if your LED base needs the collar lower.
-- **Fit**: `fit_gap`, `hole_clear`, `stud_plug_fit`.
-
 ## Fit check
 
-Every mating pair was checked with mesh booleans against the original files:
+Every joint was tested with mesh booleans, in both styles, against the original LEGO storage box and screw box files. Every one has zero overlap.
 
-| Joint | Overlap | Side play |
-|---|---|---|
-| LEGO box shell 4×4 on mesh lid (16 studs) | 0 mm³ | 0.65 mm |
-| LEGO box shell 2×2 on mesh lid | 0 mm³ | 0.65 mm |
-| Title tile on mesh lid | 0 mm³ | 0.50 mm |
-| Title tile on LEGO box shell studs | 0 mm³ | 0.50 mm |
-| Hex key brick on mesh lid / on LEGO box shell | 0 mm³ | 0.30 / 0.35 mm |
-| Driver brick on mesh lid | 0 mm³ | 0.30 mm |
-| Neighbouring bricks | 0 mm³ | 0.40 mm gap |
-| Mesh lid on Gridock tray | seats 0.48 mm into the rim saddle and self-centres (rises when pushed sideways) | |
-| Lamp bayonet vs LED kit shade | 96 % of 6,840 surface samples within 0.3 mm. Max tight spot 0.36 mm at one edge of the stop wall. | |
+| Joint | Side play |
+|---|---|
+| Stud lid on storage brick rim (tongue in groove) | 0.25–0.35 mm |
+| Storage brick stacked on a stud lid | 0.45 mm |
+| Driver / bit brick on a stud lid | 0.50 mm |
+| Brick on brick, hex key brick on brick | 0.50 mm |
+| Title tile on any studs | 0.50 mm |
+| Your LEGO box shell on a stud lid | 0.65 mm |
+| Storage brick on your LEGO box shell studs | 0.50 mm |
+| Neighbouring bricks | 0.40 mm gap |
+| 16 screw boxes inside a 4×4 storage brick | fit, 27.5 mm headroom under the lid |
+| Lamp bayonet vs LED kit shade | 96 % of 6,840 surface samples within 0.3 mm |
 
-Both styles give the same numbers. Tip: print one `title_tile` with `tile_len = 1` first to check stud grip on your printer, and adjust `fit_gap` if needed.
+Tip: print one 1×1 `title_tile` first to check stud grip on your printer, then adjust `fit_gap`.
 
 ## Not included
 
-The original Gridock, LEGO storage box, screw box and LED lamp files are not included, because their licences don't allow redistribution. Download them from their MakerWorld/Printables pages. The Rugged Screw Unit XL download contained only its label generators, so it isn't part of the stack yet.
+The original LEGO storage box, screw box, Gridock and LED lamp files aren't included, because their licences don't allow redistribution. Download them from their MakerWorld/Printables pages.
