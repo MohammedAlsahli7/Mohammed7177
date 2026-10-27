@@ -12,13 +12,37 @@
 
 /* [Part] */
 // Which part to build
-part = "storage_box"; // [storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
+part = "drawer_brick"; // [drawer_brick:Drawer brick (shell with mesh top), drawer:Drawer (slides into the drawer brick), storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
 
 /* [Style] */
 // classic = smooth LEGO, rugged = armoured corners, brick seams, grip flutes
 style = "classic"; // [classic, rugged]
 // Corner chamfer size (rugged)
 rug_chamfer = 6;
+
+/* [Drawer brick + drawer] */
+// Width in studs
+dr_cols = 4; // [1:8]
+// Depth in studs
+dr_rows = 4; // [1:8]
+// Height in plates (3 = 1 brick = 70 mm; fits the 30 mm screw boxes)
+dr_plates = 3; // [2:12]
+// Hex mesh top between the studs (the built-in mesh lid)
+dr_mesh_top = true;
+// Title engraved on the drawer front (empty = none)
+dr_title = "SCREWS & BOLTS";
+// Drawer title text height
+dr_title_size = 12;
+// Drawer pull: a giant LEGO stud knob, or a finger notch
+dr_handle = "stud"; // [stud, notch]
+// Drawer divider walls across the width (0 = none)
+dr_div_x = 0; // [0:7]
+// Drawer divider walls front to back (0 = none)
+dr_div_y = 0; // [0:7]
+// Clearance between drawer and shell (each side)
+dr_clear = 0.4;
+// Lay the shell on its back for printing (front opening up, like the LEGO box shells)
+dr_print_layout = true;
 
 /* [Storage brick + lid] */
 // Width in studs
@@ -145,7 +169,12 @@ DRIVERS = "round:6:PH0, round:7:PH1, round:8:PH2, round:9:PH3, round:6:SL3, roun
 BITS = "hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35";
 
 // ------------------------------------------------------------------ main
-if (part == "storage_box") storage_box(box_cols, box_rows, box_plates);
+if (part == "drawer_brick") {
+    if (dr_print_layout) rotate([-90, 0, 0]) translate([0, -bsize(dr_rows)/2, 0]) drawer_brick(dr_cols, dr_rows, dr_plates);
+    else drawer_brick(dr_cols, dr_rows, dr_plates);
+}
+else if (part == "drawer") drawer(dr_cols, dr_rows, dr_plates);
+else if (part == "storage_box") storage_box(box_cols, box_rows, box_plates);
 else if (part == "box_lid") box_lid(box_cols, box_rows);
 else if (part == "brick") brick(brick_cols, brick_rows, brick_plates);
 // hex keys stand short arm down, long arm up
@@ -255,6 +284,85 @@ module brick(cols, rows, plates, with_studs = true, tubes = true) {
 module ribs(cols, rows, W, D, h) {
     if (cols > 1) for (i = [1:cols-1]) translate([-W/2 + i*PITCH - fit_gap/2, 0, h/2]) cube([RIB, D - 2*box_wall + 0.02, h], center = true);
     if (rows > 1) for (j = [1:rows-1]) translate([0, -D/2 + j*PITCH - fit_gap/2, h/2]) cube([W - 2*box_wall + 0.02, RIB, h], center = true);
+}
+
+// ---------------------------------------------------------- drawer brick
+// LEGO brick shell with an open front. Studs on top, sockets underneath,
+// and (optionally) a hex mesh top between hollow ring studs. Stack as many
+// as you like - every drawer still pulls straight out.
+// Prints on its back with the opening facing up (see dr_print_layout),
+// so the mesh top and the studs print as vertical walls - no supports.
+module drawer_brick(cols, rows, plates) {
+    W = bsize(cols);
+    D = bsize(rows);
+    H = plates * PLATE_H;
+    w = box_wall;
+    frame = w + 7;
+    xs = cell_centers(cols);
+    ys = cell_centers(rows);
+    difference() {
+        chamfered_block(W, D, H);
+        // drawer cavity, open at the front (-y)
+        translate([0, -w/2 - 1, BASE_T]) linear_extrude(H - TOP_T - BASE_T)
+            square([W - 2*w, D - w + 2], center = true);
+        sockets(cols, rows);
+        rugged_marks(W, D, H);
+        if (dr_mesh_top)
+            translate([0, 0, H - TOP_T - 1]) linear_extrude(TOP_T + 2)
+                offset(delta = 0.15) offset(delta = -0.15) difference() {
+                    square([W - 2*frame, D - 2*frame], center = true);
+                    hex_mesh_2d(W - 2*frame, D - 2*frame);
+                    for (x = xs, y = ys) translate([x, y]) circle(d = STUD_D);
+                }
+    }
+    for (x = xs, y = ys) translate([x, y, H - 0.01])
+        difference() {
+            stud();
+            if (dr_mesh_top) translate([0, 0, -1]) cylinder(d = STUD_D - 2*2.4, h = STUD_H + 2);
+        }
+}
+
+// Open tray that slides into the drawer brick. The front is flush with the
+// brick face and carries a finger notch and the engraved title.
+module drawer(cols, rows, plates) {
+    W = bsize(cols);
+    D = bsize(rows);
+    H = plates * PLATE_H;
+    w = box_wall;
+    dw = W - 2*w - 2*dr_clear;            // outside width
+    dh = H - TOP_T - BASE_T - 2*dr_clear;  // outside height
+    dl = D - w - 2*dr_clear;               // front face to back
+    t = 1.6;                               // side / back / floor
+    face = 3;                              // front panel
+    notch = dr_handle == "notch";
+    notch_r = min(15, dh/2 - 2);
+    knob_d = min(24, dh*0.45);
+    knob_z = dh*0.62;
+    title_z = notch ? (dh - notch_r)/2 : (knob_z - knob_d/2)/2;
+    title_room = notch ? dh - notch_r : knob_z - knob_d/2;
+    difference() {
+        translate([0, 0, dh/2]) cube([dw, dl, dh], center = true);
+        // inside
+        translate([0, face/2 - t/2, t + dh/2]) cube([dw - 2*t, dl - face - t, dh], center = true);
+        // finger notch in the front
+        if (notch) translate([0, -dl/2 - 1, dh]) rotate([-90, 0, 0]) cylinder(r = notch_r, h = face + 2);
+        if (len(dr_title) > 0)
+            translate([0, -dl/2 + 0.6, title_z]) rotate([90, 0, 0])
+                linear_extrude(1) text(dr_title, size = min(dr_title_size, title_room * 0.6), font = font, halign = "center", valign = "center");
+    }
+    // giant stud pull knob on the front
+    if (!notch) translate([0, -dl/2 + 0.01, knob_z]) rotate([90, 0, 0]) {
+        cylinder(d = knob_d, h = 11);
+        translate([0, 0, 11 - 0.01]) cylinder(d1 = knob_d, d2 = knob_d - 2, h = 1);
+    }
+    // dividers
+    ih = dh - t - 3;
+    translate([0, 0, t - 0.01]) {
+        if (dr_div_x > 0) for (k = [1:dr_div_x])
+            translate([-dw/2 + t + k*(dw - 2*t)/(dr_div_x + 1), face/2 - t/2, ih/2]) cube([RIB, dl - face - t + 0.02, ih], center = true);
+        if (dr_div_y > 0) for (k = [1:dr_div_y])
+            translate([0, -dl/2 + face + k*(dl - face - t)/(dr_div_y + 1), ih/2]) cube([dw - 2*t + 0.02, RIB, ih], center = true);
+    }
 }
 
 // ---------------------------------------------------------- storage brick
