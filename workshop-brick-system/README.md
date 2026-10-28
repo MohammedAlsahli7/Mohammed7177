@@ -29,6 +29,20 @@ That's the same scale as the LEGO storage box shells, so your shells and bins sn
 | `lamp` + `lamp_stud` | 2×2 lamp brick. Twist-locks onto your LED lamp kit base. Press 4 stud caps into the top and they glow. | 2×2 | Lamp upside down, studs closed side down |
 | `gridock_lid` | Optional. Turns a Gridock tray into a LEGO base. | 4×4 | Right side up |
 
+### Special pieces
+
+| Part | What it is | Default | Print |
+|---|---|---|---|
+| `slope` | Roof slope: studs on the back row, sloped face to the front. `slope_text` puts a label on the face, like a printed LEGO slope. | 2×2, 1 brick | Right side up |
+| `corner_brick` | L-shaped brick, legs `corner_a` × `corner_b` studs. Wraps a corner of the bench or the lamp. | 2+2 | Right side up |
+| `shape_brick` | Any outline you like: list the stud cells in `shape_cells`, e.g. `"0,0 1,0 2,0 1,1"` (a T) or `"0,0 1,0 2,0 0,1 2,1"` (a U). | T | Right side up |
+| `round_cup` | Round pot for pens, markers and brushes, on a square base so it sits on studs. | 1×1, 2 bricks tall | Right side up |
+| `jumper_plate` | Plate whose studs sit half a stud over, so a piece can land between grid positions. | 2×1 | Right side up |
+| `arch` | Arch on two legs, with a 45° pointed opening so it prints without supports. Bridges cables or a power strip. | 3×1, 1 brick | Right side up |
+| `pocket_brick` | **For odd-shaped tools.** A pocket the exact shape of the tool, with a finger scoop. Photograph the tool from above on paper, trace it in Inkscape (Path → Trace Bitmap, mm units), save as SVG and set `pocket_svg`. With no SVG it makes a demo slot. | 4×2, 1 brick | Right side up |
+
+![special pieces](images/special-pieces.png)
+
 None of the parts need supports. Closed bricks have LEGO-style internal ribs and tubes, so their tops bridge only short gaps.
 
 ![drawer open](images/drawer-open.png)
@@ -50,7 +64,8 @@ Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld cust
   - `tb_plates` = brick height.
 - **Look:** `style = "classic"` (smooth LEGO) or `"rugged"` (armoured corners, brick seams, grip flutes).
 - **Fit:** `stud_grip` and `grip_squeeze` (crush ribs in every socket so bricks click together), `fit_gap`, `hole_clear`, `stud_plug_fit`.
-- **Printer:** set `bed_size` to your bed (default 256 mm). OpenSCAD prints a warning when a part is too big.
+- **Printer:** set `bed_size` to your bed (default 270 mm for the Qidi Q2). OpenSCAD prints a warning when a part is too big. Every default part fits the Q2.
+- **Two colours (Qidi Q2 Combo / QIDI Box, or any AMS):** set `color_part = "body"` and export, then `color_part = "text"` and export. Ready-made pairs are in `stl/<style>/two_color/`. In QIDI Studio, select both files and import them together, answer **Yes** to "load as a single object with multiple parts", then give the text part its own filament. Raised text sits on top; engraved labels become flush colour inlays.
 
 | classic | rugged |
 |---|---|
@@ -79,6 +94,8 @@ Every joint was tested with mesh booleans, in both styles, against the original 
 | 16 screw boxes in a 4×4 drawer | fit (209.6 mm inside, 197.6 mm rugged), 22 mm headroom |
 | 16 screw boxes inside a 4×4 storage brick | fit, 27.5 mm headroom under the lid |
 | Lamp bayonet vs LED kit shade | 96 % of 6,840 surface samples within 0.3 mm |
+| Special pieces on studs (slope, corner, shape, cup, jumper, arch, pocket) | only the grip ribs touch; 0.1–0.25 mm play |
+| Two-colour pairs | body and text line up exactly; inlays fill their engravings with zero gap or overlap |
 
 Start with `test_kit`: stack the plates and press the tile on. If it's loose, raise `grip_squeeze` (e.g. 0.15); if it's hard to pull apart, lower it (e.g. 0.05). Your LEGO box shells have no ribs, so their sockets stay a loose fit on these studs.
 
