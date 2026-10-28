@@ -12,7 +12,7 @@
 
 /* [Part] */
 // Which part to build
-part = "drawer_brick"; // [drawer_brick:Drawer brick (shell with mesh top), drawer:Drawer (slides into the drawer brick), nameplate:Drawer nameplate (slides into the drawer front),storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
+part = "drawer_brick"; // [drawer_brick:Drawer brick (shell with mesh top), drawer:Drawer (slides into the drawer brick), nameplate:Drawer nameplate (slides into the drawer front), drawer_spacer:Spacer frame (stops screw boxes sliding in the drawer), test_kit:Fit test kit (print first), storage_box:Storage brick (open box), box_lid:Stud lid with mesh + title, brick:Plain brick / plate, hex_key_brick:Hex key brick, driver_brick:Screwdriver brick, bit_brick:Bit brick, tool_brick:Custom tool brick, title_tile:Title tile, lamp:LEGO lamp shade, lamp_stud:Lamp stud cap, gridock_lid:Gridock tray lid (studs)]
 
 /* [Style] */
 // classic = smooth LEGO, rugged = armoured corners, brick seams, grip flutes
@@ -94,7 +94,7 @@ mesh_rib = 1.8;
 
 /* [Tool bricks] */
 // Engraved label height
-tb_label_size = 4.5;
+tb_label_size = 5.5;
 // Extra clearance added to every tool hole
 hole_clear = 0.5;
 // Custom brick: rows of studs
@@ -145,6 +145,14 @@ gl_stud_rows = 3; // [0:4]
 /* [Fit and font] */
 // Gap between neighbouring bricks (keeps them from binding)
 fit_gap = 0.4;
+// Crush ribs in the sockets so studs click in (print test_kit to tune)
+stud_grip = true;
+// How much each rib squeezes the stud (mm). Raise if loose, lower if tight.
+grip_squeeze = 0.1;
+// Your printer's bed size (warns when a part is too big)
+bed_size = 256;
+// Spacer frame: size of the block it holds (4 x 4 screw boxes = 182.8 + 0.6)
+spacer_inner = 183.4;
 // Font (Liberation ships with OpenSCAD)
 font = "Liberation Sans:style=Bold";
 
@@ -161,6 +169,9 @@ BASE_T = 12.5;           // solid bottom that holds the sockets
 TOP_T = 2.4;             // top skin of closed bricks
 RIB = 1.6;               // internal rib / divider thickness
 TONGUE = [1.2, 2];       // storage brick rim tongue [width, height]
+DR_SKID = 1.2;           // drawer skid height
+DR_LIFT = 0.6;           // extra headroom so the drawer can be lifted over the stop
+DR_STOP_H = 0.9;         // floor bump height (catches the drawer's back bar)
 
 // LED lamp kit bayonet, measured from the kit's own shade (z = up from the rim):
 // 70.0 OD rim, 33.0 inner radius, two retaining lugs (r 31.5, z 0-3) with
@@ -178,14 +189,17 @@ BITS = "hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, hex:6.35, he
 
 // ------------------------------------------------------------------ main
 if (part == "drawer_brick") {
+    bed_check("drawer brick", bsize(dr_cols), dr_print_layout ? dr_plates*PLATE_H + STUD_H : bsize(dr_rows));
     if (dr_print_layout) rotate([-90, 0, 0]) translate([0, -bsize(dr_rows)/2, 0]) drawer_brick(dr_cols, dr_rows, dr_plates);
     else drawer_brick(dr_cols, dr_rows, dr_plates);
 }
-else if (part == "drawer") drawer(dr_cols, dr_rows, dr_plates);
+else if (part == "drawer") { bed_check("drawer", bsize(dr_cols), bsize(dr_rows) + 12); drawer(dr_cols, dr_rows, dr_plates); }
+else if (part == "drawer_spacer") drawer_spacer(dr_cols, dr_rows);
 else if (part == "nameplate") nameplate();
-else if (part == "storage_box") storage_box(box_cols, box_rows, box_plates);
-else if (part == "box_lid") box_lid(box_cols, box_rows);
-else if (part == "brick") brick(brick_cols, brick_rows, brick_plates);
+else if (part == "test_kit") test_kit();
+else if (part == "storage_box") { bed_check("storage brick", bsize(box_cols), bsize(box_rows)); storage_box(box_cols, box_rows, box_plates); }
+else if (part == "box_lid") { bed_check("lid", bsize(box_cols), bsize(box_rows)); box_lid(box_cols, box_rows); }
+else if (part == "brick") { bed_check("brick", bsize(brick_cols), bsize(brick_rows)); brick(brick_cols, brick_rows, brick_plates); }
 // hex keys stand short arm down, long arm up
 else if (part == "hex_key_brick") tool_brick(3, 3, parse_line(HEX_KEYS), 1, 0);
 // screwdrivers hang shaft down, handle resting on the stud
@@ -251,9 +265,21 @@ module studs(cols, rows, z) {
         translate([x, y, z - 0.01]) stud();
 }
 
+// Sockets with four thin crush ribs that squeeze the stud, so bricks click
+// together instead of just resting. The bottom 1.5 mm has no ribs as a lead-in.
 module sockets(cols, rows) {
     for (x = cell_centers(cols), y = cell_centers(rows))
-        translate([x, y, -1]) cylinder(d = SOCKET_D, h = SOCKET_DEPTH + 1);
+        translate([x, y, -1]) difference() {
+            cylinder(d = SOCKET_D, h = SOCKET_DEPTH + 1);
+            if (stud_grip) for (a = [45:90:315]) rotate(a)
+                translate([STUD_D/2 - grip_squeeze, -0.6, 1 + 1.5]) cube([2, 1.2, SOCKET_DEPTH]);
+        }
+}
+
+// Echo a warning when a part won't fit the print bed
+module bed_check(name, x, y) {
+    if (max(x, y) > bed_size)
+        echo(str("WARNING: ", name, " is ", round(x), " x ", round(y), " mm on the bed - bigger than bed_size (", bed_size, " mm). Use fewer studs."));
 }
 
 // Brick seams + end grip flutes for the rugged style
@@ -329,6 +355,7 @@ module drawer_brick(cols, rows, plates) {
             stud();
             if (dr_mesh_top) translate([0, 0, -1]) cylinder(d = STUD_D - 2*2.4, h = STUD_H + 2);
         }
+    drawer_stops(W, D);
 }
 
 // Drawer opening width. Rugged corners are chamfered, so the opening is
@@ -343,7 +370,7 @@ module drawer(cols, rows, plates) {
     H = plates * PLATE_H;
     w = box_wall;
     dw = drawer_cavity_w(W) - 2*dr_clear;  // outside width
-    dh = H - TOP_T - BASE_T - 2*dr_clear;  // outside height
+    dh = H - TOP_T - BASE_T - 2*dr_clear - DR_SKID - DR_LIFT;  // body height above the skids
     dl = D - w - 2*dr_clear;               // front face to back
     t = 1.6;                               // side / back / floor
     face = 3;                              // front panel
@@ -354,6 +381,13 @@ module drawer(cols, rows, plates) {
     knob_z = dr_nameplate ? max(dh*0.62, np_top + 1 + knob_d/2) : dh*0.62;
     title_z = notch ? (dh - notch_r)/2 : (knob_z - knob_d/2)/2;
     title_room = notch ? dh - notch_r : knob_z - knob_d/2;
+    // skids along the sides + a cross bar at the back; the bar catches the
+    // drawer brick's floor bumps so the drawer can't be pulled out by accident
+    translate([0, 0, DR_SKID/2]) {
+        for (s = [-1, 1]) translate([s*(dw/2 - 4), 0, 0]) cube([8, dl, DR_SKID + 0.02], center = true);
+        translate([0, dl/2 - 3, 0]) cube([dw, 4, DR_SKID + 0.02], center = true);
+    }
+    translate([0, 0, DR_SKID]) {
     difference() {
         translate([0, 0, dh/2]) cube([dw, dl, dh], center = true);
         // inside
@@ -378,6 +412,38 @@ module drawer(cols, rows, plates) {
         if (dr_div_y > 0) for (k = [1:dr_div_y])
             translate([0, -dl/2 + face + k*(dl - face - t)/(dr_div_y + 1), ih/2]) cube([dw - 2*t + 0.02, RIB, ih], center = true);
     }
+    }
+}
+
+// Floor bumps in the drawer brick: a gentle ramp on the front side (the cross
+// bar rides over it going in), a steep face on the back side (the stop).
+module drawer_stops(W, D) {
+    dw = drawer_cavity_w(W) - 2*dr_clear;
+    for (x = [-dw/4, 0, dw/4])
+        translate([x - 5, 0, BASE_T - 0.01]) rotate([90, 0, 90]) linear_extrude(10)
+            polygon([[-D/2 + 4, 0], [-D/2 + 12, DR_STOP_H], [-D/2 + 12, 0]]);
+}
+
+// Frame that fills the gap around a block of screw boxes so it can't slide.
+module drawer_spacer(cols, rows) {
+    t = 1.6;
+    face = 3;
+    W = bsize(cols);
+    D = bsize(rows);
+    iw = drawer_cavity_w(W) - 2*dr_clear - 2*t - 0.6;
+    il = D - box_wall - 2*dr_clear - face - t - 0.6;
+    linear_extrude(8) difference() {
+        square([iw, il], center = true);
+        square([min(spacer_inner, iw - 4), min(spacer_inner, il - 4)], center = true);
+    }
+}
+
+// Print this first: two 1x1 plates (stack them to feel the stud grip) and a
+// 1x1 tile. Adjust grip_squeeze / fit_gap until it feels like LEGO.
+module test_kit() {
+    translate([-32, 0, 0]) brick(1, 1, 1);
+    translate([32, 0, 0]) brick(1, 1, 1);
+    translate([0, 62, 0]) title_tile(1, "FIT", "");
 }
 
 // ---------------------------------------------------------- nameplate

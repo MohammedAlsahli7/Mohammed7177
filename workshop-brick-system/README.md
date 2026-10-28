@@ -14,7 +14,9 @@ That's the same scale as the LEGO storage box shells, so your shells and bins sn
 | Part | What it is | Default size | Print |
 |---|---|---|---|
 | `drawer_brick` | Drawer unit: LEGO shell with studs on top, sockets underneath, and a hex-mesh top between hollow ring studs (the mesh lid is built in). Stack as many as you like; every drawer still opens without moving the others. | 4×4, 1 brick | On its back, opening up (the default layout) |
-| `drawer` | Slides into the drawer brick. A giant stud knob is the pull, a nameplate holder sits on the front, and dividers are optional. Holds 16 screw-box modules with 23 mm headroom. | 4×4 | Right side up |
+| `drawer` | Slides into the drawer brick. A giant stud knob is the pull, a nameplate holder sits on the front, and dividers are optional. Holds 16 screw-box modules with 22 mm headroom. **Drawer stop:** it rides on skids, and a bar at the back catches bumps in the brick floor after 199 mm of travel, so it can't fall out. Lift it about 1 mm while pulling to take it out; it rides over the ramp going back in. | 4×4 | Right side up |
+| `drawer_spacer` | Frame that sits in the drawer around a block of 4×4 screw boxes, so they can't slide when the drawer opens. Change `spacer_inner` for other blocks. | fits the drawer | Flat |
+| `test_kit` | **Print this first.** Two 1×1 plates and a 1×1 tile. Stack them to feel the stud grip, then tune `grip_squeeze` / `fit_gap`. | small | Right side up |
 | `nameplate` | Swappable drawer label. It slides into the holder from the right, so a reused drawer can be relabelled. Text is raised for two-colour printing. A paper strip behind a clear plate also works. | fits the drawer width | Flat, text up |
 | `storage_box` | Open-top storage brick. Holds 4×4 screw-box modules. Optional dividers. Title engraved on the front. | 4×4, 1 brick | Right side up |
 | `box_lid` | Stud lid. Hex mesh between hollow ring studs, title engraved on the front edge. Locks onto the box rim, and another box stacks on its studs. | 4×4 | Right side up, flat |
@@ -47,7 +49,8 @@ Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld cust
   - `tb_depth` = how deep each hole goes.
   - `tb_plates` = brick height.
 - **Look:** `style = "classic"` (smooth LEGO) or `"rugged"` (armoured corners, brick seams, grip flutes).
-- **Fit:** `fit_gap`, `hole_clear`, `stud_plug_fit`.
+- **Fit:** `stud_grip` and `grip_squeeze` (crush ribs in every socket so bricks click together), `fit_gap`, `hole_clear`, `stud_plug_fit`.
+- **Printer:** set `bed_size` to your bed (default 256 mm). OpenSCAD prints a warning when a part is too big.
 
 | classic | rugged |
 |---|---|
@@ -55,11 +58,13 @@ Open `brickshop.scad` in OpenSCAD (Window → Customizer) or the MakerWorld cust
 
 ## Fit check
 
-Every joint was tested with mesh booleans, in both styles, against the original LEGO storage box and screw box files. Every one has zero overlap.
+Every joint was tested with mesh booleans, in both styles, against the original LEGO storage box and screw box files. Nothing collides except the crush ribs, which squeeze each stud on purpose (about 1.5 mm³ of rib per stud at `grip_squeeze = 0.1`). The side play below is the clearance to the socket wall; the ribs take it up.
 
 | Joint | Side play |
 |---|---|
 | Drawer inside drawer brick | 0.40 mm per side |
+| Drawer stop | catches after 199 mm of travel; lifted 0.95 mm it comes out cleanly; going in it clears the ramp |
+| Screw boxes in the spacer frame | 0.3 mm per side (13.4 mm without it) |
 | Nameplate in its holder | slides out the open end; held by the lips and the end stop in every other direction |
 | Drawer brick stacked on drawer brick | 0.50 mm |
 | Hex key brick / title tile / your LEGO box shell on a drawer brick | 0.50 / 0.50 / 0.65 mm |
@@ -71,11 +76,11 @@ Every joint was tested with mesh booleans, in both styles, against the original 
 | Your LEGO box shell on a stud lid | 0.65 mm |
 | Storage brick on your LEGO box shell studs | 0.50 mm |
 | Neighbouring bricks | 0.40 mm gap |
-| 16 screw boxes in a 4×4 drawer | fit (209.6 mm inside, 197.6 mm rugged), 23 mm headroom |
+| 16 screw boxes in a 4×4 drawer | fit (209.6 mm inside, 197.6 mm rugged), 22 mm headroom |
 | 16 screw boxes inside a 4×4 storage brick | fit, 27.5 mm headroom under the lid |
 | Lamp bayonet vs LED kit shade | 96 % of 6,840 surface samples within 0.3 mm |
 
-Tip: print one 1×1 `title_tile` first to check stud grip on your printer, then adjust `fit_gap`.
+Start with `test_kit`: stack the plates and press the tile on. If it's loose, raise `grip_squeeze` (e.g. 0.15); if it's hard to pull apart, lower it (e.g. 0.05). Your LEGO box shells have no ribs, so their sockets stay a loose fit on these studs.
 
 ## Not included
 
