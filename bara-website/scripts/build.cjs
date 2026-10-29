@@ -49,6 +49,12 @@ const path = require('node:path');
     legalComments: 'none',
   };
 
+  /**
+   * Calls fn for every file under dir.
+   * @param {string} dir
+   * @param {function(string): !Promise} fn
+   * @return {!Promise<void>}
+   */
   async function walk(dir, fn) {
     for (const e of await fs.readdir(dir, {withFileTypes: true})) {
       const p = path.join(dir, e.name);
@@ -56,11 +62,17 @@ const path = require('node:path');
       else await fn(p);
     }
   }
+  /**
+   * Copies the site into dist/, skipping tooling and sources.
+   * @param {string} src
+   * @param {string} dst
+   * @return {!Promise<void>}
+   */
   async function copyTree(src, dst) {
     for (const e of await fs.readdir(src, {withFileTypes: true})) {
       if (SKIP.has(e.name) || e.name.endsWith('.prompt.md')) continue;
-      const s = path.join(src, e.name),
-        d = path.join(dst, e.name);
+      const s = path.join(src, e.name);
+      const d = path.join(dst, e.name);
       if (e.isDirectory()) {
         await fs.mkdir(d, {recursive: true});
         await copyTree(s, d);
@@ -71,19 +83,27 @@ const path = require('node:path');
   await fs.rm(OUT, {recursive: true, force: true});
   await fs.mkdir(path.join(OUT, 'vendor'), {recursive: true});
   await copyTree(ROOT, OUT);
-  for (const [from, to] of VENDOR)
+  // 0. Design-system bundle — always rebuilt from components/** so dist never
+  // ships a stale _ds_bundle.js.
+  process.env.NODE_ENV = 'production';
+  const nDs = await require('./build-ds.cjs').buildDs(
+    path.join(OUT, '_ds_bundle.js'),
+  );
+  for (const [from, to] of VENDOR) {
     await fs.copyFile(
       path.join(ROOT, 'node_modules', from),
       path.join(OUT, 'vendor', to),
     );
+  }
   // Self-host the Lucide icon font (was unpkg) so icons work offline and under
   // a strict CSP.
   await fs.mkdir(path.join(OUT, 'vendor', 'lucide'), {recursive: true});
-  for (const f of ['lucide.css', 'lucide.woff2', 'lucide.woff', 'lucide.ttf'])
+  for (const f of ['lucide.css', 'lucide.woff2', 'lucide.woff', 'lucide.ttf']) {
     await fs.copyFile(
       path.join(ROOT, 'node_modules', 'lucide-static', 'font', f),
       path.join(OUT, 'vendor', 'lucide', f),
     );
+  }
   const fontsCss = path.join(OUT, 'tokens', 'fonts.css');
   await fs.writeFile(
     fontsCss,
@@ -170,13 +190,14 @@ const path = require('node:path');
       path.join(OUT, 'sitemap.xml'),
       `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${SITE_URL}/design/</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`,
     );
-  } else
+  } else {
     console.warn(
       '! SITE_URL not set — canonical, og:url and sitemap.xml were skipped.',
     );
+  }
 
   console.log(
-    `✓ dist/ ready — ${nJsx} JSX files compiled, ${nHtml} HTML files rewritten.`,
+    `✓ dist/ ready — ${nDs} DS components bundled, ${nJsx} JSX files compiled, ${nHtml} HTML files rewritten.`,
   );
 })().catch((e) => {
   console.error(e);

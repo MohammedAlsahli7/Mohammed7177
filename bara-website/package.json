@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Bara’ website + Ops (inventory, print floor) server. Zero runtime dependencies.",
   "scripts": {
+    "ds": "node scripts/build-ds.cjs",
     "build": "node scripts/build.cjs",
     "start": "node server/index.js",
     "dev": "BARA_STATIC_DIR=. node server/index.js",
@@ -14,8 +15,8 @@
     "test:site": "node --test test/site.e2e.cjs test/checkout.e2e.cjs",
     "check:data": "node scripts/check-data.cjs",
     "check:size": "node scripts/check-size.cjs",
-    "lint": "eslint . && prettier --check \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\"",
-    "format": "prettier --write \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\" && eslint --fix ."
+    "lint": "eslint --ext .js,.jsx,.cjs . && prettier --check \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\"",
+    "format": "prettier --write \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\" && eslint --ext .js,.jsx,.cjs --fix ."
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

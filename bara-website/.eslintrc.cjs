@@ -44,6 +44,11 @@ module.exports = {
       env: {node: true},
     },
     {
+      // Browser tests run code inside the page (page.evaluate).
+      files: ['test/**/*.e2e.cjs'],
+      env: {node: true, browser: true},
+    },
+    {
       files: [
         '**/*.jsx',
         'ui_kits/**/*.js',

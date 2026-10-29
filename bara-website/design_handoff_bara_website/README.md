@@ -18,7 +18,7 @@ index.html               production entry (SEO meta, noscript, loads everything 
 site.config.js           per-environment config: sources, endpoints, contact
 data/*.json              ALL catalogue / stock / pricing data  (schema: data/README.md)
 styles.css → tokens/     design tokens (colours, type, spacing, effects, fonts)
-_ds_bundle.js            compiled design-system components → window.InfillDesignSystem_*  (aliased as B / S)
+_ds_bundle.js            generated from components/** by scripts/build-ds.cjs (npm run ds) → window.InfillDesignSystem_*  (aliased as B / S)
 components/**            component source (.jsx) + contracts (.d.ts) + usage notes (.prompt.md)
 ui_kits/website/
   data.js                data layer (baraApi): fetch, normalise, POST, poll, STL/OBJ reader, price estimate
@@ -30,6 +30,7 @@ ui_kits/website/
   Motion.jsx Models3D.jsx  motion primitives, procedural three.js product models
 ui_kits/filament-studio/ colour previewer + staff stock manager (?staff)
 design/index.html        public design-system docs hub
+scripts/build-ds.cjs     components/** → _ds_bundle.js (esbuild; React from page globals; .css imports injected)
 scripts/build.cjs        JSX precompile, vendor prod React/three, SEO stamping → dist/
 scripts/check-data.cjs   data validation (npm run check)
 ```

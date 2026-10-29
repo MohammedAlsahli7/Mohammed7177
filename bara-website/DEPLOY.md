@@ -38,6 +38,10 @@ npm start               # reads .env; serves dist/ on $PORT (8080)
 ```
 Keep it running with systemd, pm2 or your host's process manager.
 
+The build rebuilds `_ds_bundle.js` from `components/**` (same as `npm run ds`), so a deploy never ships a stale design-system bundle. It also precompiles all JSX (no in-browser Babel), self-hosts React, three and the Lucide icon font in `dist/vendor/`, and with `SITE_URL` adds canonical/og:url and writes `sitemap.xml`.
+
+After editing a component in `components/`, run `npm run ds` to refresh `_ds_bundle.js` for `npm run dev`.
+
 `npm run dev` serves the source tree directly with the API (in-browser Babel, slower; for editing only).
 
 ## 3. HTTPS and the printers' network

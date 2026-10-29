@@ -26,12 +26,20 @@ if (!fs.existsSync(path.join(dist, 'index.html'))) {
   process.exit(1);
 }
 const quiet = {log() {}, warn() {}, error() {}};
-let app, base, browser;
+let app;
+let base;
+let browser;
 // Third-party hosts (Google Fonts) may be unreachable in CI; only our own
 // code's errors fail a test.
 const ignorable = (msg) =>
   /fonts\.(googleapis|gstatic)\.com|Failed to load resource|net::ERR/.test(msg);
 
+/**
+ * Opens a page and collects its errors.
+ * @param {string} url
+ * @param {!Object=} options Viewport and browser-context options.
+ * @return {!Promise<{page: !Object, errors: !Array<string>}>}
+ */
 async function open(url, {viewport = {width: 1280, height: 860}, ...ctx} = {}) {
   const page = await browser.newPage({viewport, ...ctx});
   const errors = [];
