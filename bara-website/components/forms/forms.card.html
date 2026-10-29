@@ -1,0 +1,19 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Forms" subtitle="Input, Select, Checkbox, Radio, Switch, QuantityStepper" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:24px}.row{display:flex;flex-wrap:wrap;align-items:center;gap:16px}.col{display:flex;flex-direction:column;gap:16px}.lbl{font:600 10.5px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3);width:72px;flex-shrink:0}</style>
+</head><body><div id="root"></div><script type="text/babel">
+const NS = window.InfillDesignSystem_d33a9b;
+const { Input, Select, Checkbox, Radio, Switch, QuantityStepper } = NS;
+function Demo(){ const [q,setQ]=React.useState('std');
+return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
+<div className="col"><Input label="Model name" placeholder="e.g. Hex dice tower" icon="box"/><Input label="Width" defaultValue="120" suffix="mm" hint="Max 250 mm on our bed"/><Input label="Email" defaultValue="hi@" error="That email looks half-printed."/></div>
+<div className="col"><Select label="Layer height" options={['0.12 mm — fine','0.20 mm — standard','0.28 mm — draft']} defaultValue="0.20 mm — standard"/>
+<div className="row"><Radio value="std" checked={q==='std'} onChange={setQ} label="Standard" description="3–4 days"/><Radio value="rush" checked={q==='rush'} onChange={setQ} label="Rush" description="24 h · +SAR 30"/></div>
+<div className="row"><Checkbox defaultChecked label="Gift wrap"/><Switch defaultChecked label="عربي"/><QuantityStepper defaultValue={2}/></div></div>
+</div>}
+ReactDOM.createRoot(root).render(<Demo/>);
+</script></body></html>

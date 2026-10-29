@@ -1,0 +1,15 @@
+# docker compose up -d   → http://localhost:8080 (site) and http://localhost:8080/ops/ (staff)
+# Put it behind HTTPS (Caddy, nginx, Cloudflare Tunnel…) before going public.
+services:
+  bara:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      BARA_DATA_DIR: /data
+    volumes:
+      - bara-data:/data   # database (db.json) + uploaded customer files — back this up
+volumes:
+  bara-data:

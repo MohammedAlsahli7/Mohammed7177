@@ -1,0 +1,25 @@
+{
+  "updatedAt": "2026-10-29",
+  "thresholds": { "in": 1500, "low": 300 },
+  "items": [
+    { "id": "pla-yolk", "material": "pla", "line": "House PLA Matte", "name": "Yolk", "ar": "صفار", "hex": "#F2B705", "finish": "matte", "grams": 4200, "shelf": "A1" },
+    { "id": "pla-bubble", "material": "pla", "line": "House PLA Matte", "name": "Bubblegum", "ar": "علكة", "hex": "#E8367A", "finish": "matte", "grams": 2600, "shelf": "A1" },
+    { "id": "pla-graphite", "material": "pla", "line": "House PLA Matte", "name": "Graphite", "ar": "جرافيت", "hex": "#232327", "finish": "matte", "grams": 5100, "shelf": "A2" },
+    { "id": "pla-bone", "material": "pla", "line": "House PLA Matte", "name": "Bone", "ar": "عظمي", "hex": "#EEE6D3", "finish": "matte", "grams": 3300, "shelf": "A2" },
+    { "id": "pla-tangerine", "material": "pla", "line": "House PLA Matte", "name": "Tangerine", "ar": "يوسفي", "hex": "#FF6A2B", "finish": "matte", "grams": 640, "shelf": "A3" },
+    { "id": "pla-sage", "material": "pla", "line": "House PLA Matte", "name": "Sage", "ar": "مريمية", "hex": "#8DAA91", "finish": "matte", "grams": 1900, "shelf": "A3" },
+    { "id": "pla-sky", "material": "pla", "line": "House PLA Matte", "name": "Sky", "ar": "سماوي", "hex": "#7FB8E6", "finish": "matte", "grams": 120, "shelf": "A3" },
+    { "id": "pla-brick", "material": "pla", "line": "House PLA Matte", "name": "Brick", "ar": "طوبي", "hex": "#A8432F", "finish": "matte", "grams": 820, "shelf": "A4" },
+    { "id": "silk-brass", "material": "pla", "line": "PLA Silk", "name": "Brass", "ar": "نحاسي أصفر", "hex": "#C9A13B", "finish": "silk", "grams": 2100, "shelf": "B1" },
+    { "id": "silk-copper", "material": "pla", "line": "PLA Silk", "name": "Copper", "ar": "نحاسي", "hex": "#B8693E", "finish": "silk", "grams": 450, "shelf": "B1" },
+    { "id": "silk-pearl", "material": "pla", "line": "PLA Silk", "name": "Pearl", "ar": "لؤلؤي", "hex": "#E9E4DA", "finish": "silk", "grams": 1600, "shelf": "B2" },
+    { "id": "petg-lagoon", "material": "petg", "line": "PETG", "name": "Lagoon", "ar": "بحيرة", "hex": "#12A5A0", "finish": "gloss", "grams": 3000, "shelf": "C1" },
+    { "id": "petg-ice", "material": "petg", "line": "PETG", "name": "Clear ice", "ar": "جليد شفاف", "hex": "#CFE8F2", "finish": "translucent", "grams": 2200, "shelf": "C1" },
+    { "id": "petg-smoke", "material": "petg", "line": "PETG", "name": "Smoke", "ar": "دخاني", "hex": "#5A5F66", "finish": "translucent", "grams": 380, "shelf": "C2" },
+    { "id": "petg-signal", "material": "petg", "line": "PETG", "name": "Signal red", "ar": "أحمر", "hex": "#D42A2A", "finish": "gloss", "grams": 1700, "shelf": "C2" },
+    { "id": "tpu-bounce", "material": "tpu", "line": "TPU 95A", "name": "Bounce", "ar": "أزرق مرن", "hex": "#2F6BFF", "finish": "satin", "grams": 1500, "shelf": "D1" },
+    { "id": "tpu-graphite", "material": "tpu", "line": "TPU 95A", "name": "Graphite", "ar": "جرافيت", "hex": "#2A2A30", "finish": "satin", "grams": 2250, "shelf": "D1" },
+    { "id": "tpu-lime", "material": "tpu", "line": "TPU 95A", "name": "Lime", "ar": "ليموني", "hex": "#B6D935", "finish": "satin", "grams": 310, "shelf": "D2" },
+    { "id": "loop-confetti", "material": "loop", "line": "Bara' Loop (recycled)", "name": "Confetti", "ar": "كونفيتي", "hex": "#8C877C", "finish": "speckle", "grams": 0, "shelf": "—" }
+  ]
+}

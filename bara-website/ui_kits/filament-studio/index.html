@@ -1,0 +1,120 @@
+<!-- @dsCard group="Filament Studio" viewport="1280x800" name="Filament Studio" subtitle="Preview prints in real stock colours — 3D, compare, catalog, staff stock" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bara' — Filament Studio</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/three@0.149.0/build/three.min.js" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="../../site.config.js"></script>
+<script src="../website/data.js"></script>
+<script src="stock.js"></script>
+<script src="../website/copy.js"></script>
+<style>@keyframes s-bub{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:none}}</style>
+</head><body><div id="root"></div>
+<script type="text/babel" src="Viewer3D.jsx"></script>
+<script type="text/babel" src="Panels.jsx"></script>
+<script type="text/babel" src="../website/Motion.jsx"></script>
+<script type="text/babel" src="../website/Crew.jsx"></script>
+<script type="text/babel">
+window.__peekCtx = 'studio';
+window.__peekSel = 'main section > *, main aside > *, main > div > *';
+const crewHost = document.createElement('div'); document.body.appendChild(crewHost);
+ReactDOM.createRoot(crewHost).render(<PeekCrew/>);
+</script>
+<script type="text/babel">
+const fsById=(stock,id)=>stock.find(f=>f.id===id);
+function App(){
+  const [data,setData]=React.useState(null);const [err,setErr]=React.useState(false);
+  const load=()=>{setErr(false);baraLoadStudio().then(setData).catch(e=>{console.error('[studio] load failed',e);setErr(true)})};
+  React.useEffect(load,[]);
+  if(err)return <div style={{minHeight:'100vh',display:'grid',placeItems:'center',textAlign:'center'}}><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:14}}><S.Mascot pose="oops" size={140}/><b style={{font:'800 26px/1.1 var(--font-display)'}}>The filament shelf didn't load.</b><S.Button icon="rotate-ccw" onClick={load}>Try again</S.Button></div></div>;
+  if(!data)return <div role="status" style={{minHeight:'100vh',display:'grid',placeItems:'center'}}><S.Mascot pose="printing" size={140}/></div>;
+  return <Studio initial={data.stock}/>;
+}
+const STAFF_ALLOWED=/[?&#]staff\b/.test(location.search+location.hash);
+function Studio({initial}){
+  const [stock,setStockRaw]=React.useState(initial);
+  const setStock=(l)=>{setStockRaw(l);baraSaveStock(l).then(r=>{if(r==='draft')toastIt({tone:'warning',title:'Saved on this device only',message:'Connect endpoints.stock in site.config.js to publish stock changes.'})}).catch(()=>toastIt({tone:'danger',title:'Stock not saved',message:'Check your connection and try again.'}))};
+  const [staff,setStaff]=React.useState(false);
+  const [mode,setMode]=React.useState('custom');
+  const [modelId,setModelId]=React.useState('taba');
+  const [assign,setAssign]=React.useState({body:'pla-yolk',base:'pla-graphite',hat:'pla-bubble'});
+  const [part,setPart]=React.useState('body');
+  const [mat,setMat]=React.useState('pla');
+  const [light,setLight]=React.useState('daylight');
+  const [layers,setLayers]=React.useState(true);
+  const [spin,setSpin]=React.useState(true);
+  const [slots,setSlots]=React.useState(['pla-yolk','pla-bubble','petg-lagoon']);
+  const [slot,setSlot]=React.useState(0);
+  const [toast,setToastS]=React.useState(null);
+  const toastIt=(t)=>{setToastS(t);clearTimeout(window.__ft);window.__ft=setTimeout(()=>setToastS(null),2600)};
+  React.useEffect(()=>{const h=new URLSearchParams(location.hash.slice(1));if(h.get('m')){setModelId(h.get('m'));setAssign(a=>({...a,...Object.fromEntries(['body','base','hat'].filter(k=>h.get(k)).map(k=>[k,h.get(k)]))}))}},[]);
+  const model=BARA_MODELS.find(m=>m.id===modelId);
+  const partKeys=model.parts.map(p=>p.key);
+  const colors=Object.fromEntries(partKeys.map(k=>[k,fsById(stock,assign[k])||stock[0]]));
+  const activeFil=mode==='compare'?fsById(stock,slots[slot]):colors[part];
+  const pick=(f)=>{if(mode==='compare'){const n=[...slots];n[slot]=f.id;setSlots(n)}else setAssign({...assign,[part]:f.id})};
+  const adjust=(id,d)=>setStock(stock.map(f=>f.id===id?{...f,grams:Math.max(0,f.grams+d)}:f));
+  const upcharge=Math.max(...partKeys.map(k=>{const f=colors[k];return f.finish==='silk'?10:f.material==='tpu'?8:f.material==='petg'?5:0}));
+  const unavailable=partKeys.map(k=>colors[k]).filter(f=>baraStockStatus(f.grams)==='out');
+  const share=()=>{const q=new URLSearchParams({m:modelId,...Object.fromEntries(partKeys.map(k=>[k,assign[k]]))});location.hash=q.toString();try{navigator.clipboard.writeText(location.href)}catch(e){}toastIt({tone:'info',title:'Combo link copied',message:partKeys.map(k=>colors[k].name).join(' + ')})};
+  const modes=[{id:'custom',label:'3D custom'},{id:'compare',label:'Compare'},{id:'catalog',label:'Catalog'}].concat(staff?[{id:'stock',label:'Stock',count:stock.filter(f=>baraStockStatus(f.grams)!=='in').length}]:[]);
+  const lightTabs=<S.Tabs value={light} onChange={setLight} items={[{id:'daylight',label:'Daylight'},{id:'studio',label:'Studio'},{id:'shelf',label:'Shelf'}]}/>;
+  return <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
+    <header style={{minHeight:72,display:'flex',flexWrap:'wrap',alignItems:'center',gap:'12px 20px',padding:'10px 28px',borderBottom:'2px solid var(--graphite-900)',background:'var(--paper-1)'}}>
+      <S.Wordmark size={28}/><span style={{width:2,height:28,background:'var(--border-2)'}}/><span style={{font:'800 20px/1 var(--font-display)',whiteSpace:'nowrap'}}>Filament Studio</span>
+      <div style={{flex:1}}/>
+      <S.Tabs value={mode} onChange={(m)=>{setMode(m)}} items={modes}/>
+      {STAFF_ALLOWED&&<S.Switch checked={staff} onChange={(v)=>{setStaff(v);if(!v&&mode==='stock')setMode('custom')}} label="Staff view"/>}
+    </header>
+    {mode==='stock'?<main style={{padding:28,maxWidth:1320,width:'100%',margin:'0 auto'}}>
+      <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:20}}><div><span className="b-overline" style={{color:'var(--fg-3)'}}>Staff only</span><h1 className="b-h2" style={{margin:'6px 0 0'}}>Filament shelf</h1></div><span style={{...stMono,color:'var(--fg-3)'}}>In ≥ {(BARA_THRESHOLDS.in/1000).toFixed(1)} kg · Low ≥ {BARA_THRESHOLDS.low} g · {baraApi.configured('stock')?'Changes publish to the shop':'Local draft — connect endpoints.stock to publish'}</span></div>
+      <StockManager stock={stock} setStock={setStock} toast={toastIt}/>
+    </main>:
+    <main style={{flex:1,display:'grid',gridTemplateColumns:'minmax(0,1fr) 400px',minHeight:0}}>
+      <section style={{padding:24,display:'flex',flexDirection:'column',gap:16,minWidth:0}}>
+        {mode==='custom'&&<>
+          <Viewer3D modelId={modelId} colors={colors} lighting={light} layers={layers} autoRotate={spin} height={560}
+            label={<div style={{display:'flex',gap:6}}>{model.parts.map(p=><S.Tag key={p.key} style={{background:'var(--paper-0)'}}><span style={{width:10,height:10,borderRadius:3,background:colors[p.key].hex,border:'1.5px solid var(--graphite-900)'}}/>{p.label}: {colors[p.key].name}</S.Tag>)}</div>}/>
+          <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>{lightTabs}<S.Switch checked={layers} onChange={setLayers} label="Layer lines"/><S.Switch checked={spin} onChange={setSpin} label="Auto-rotate"/><span style={{...stMono,color:'var(--fg-3)',marginLeft:'auto'}}>Drag to orbit · scroll to zoom</span></div>
+        </>}
+        {mode==='compare'&&<>
+          <div style={{display:'grid',gridTemplateColumns:'repeat('+slots.length+', minmax(0,1fr))',gap:16}}>
+            {slots.map((id,i)=>{const f=fsById(stock,id)||stock[0];return <div key={i} onClick={()=>setSlot(i)} style={{display:'flex',flexDirection:'column',gap:8,cursor:'pointer',minWidth:0}}>
+              <div style={{borderRadius:20,boxShadow:slot===i?'0 0 0 3px var(--paper-1), 0 0 0 6px var(--yolk-500)':'none'}}><Viewer3D modelId={modelId} colors={{body:f,base:colors.base||f,hat:colors.hat||f}} lighting={light} layers={layers} autoRotate={spin} height={slots.length>3?340:420}/></div>
+              <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0,flexWrap:'wrap'}}><span style={{width:18,height:18,flexShrink:0,borderRadius:999,background:f.hex,border:'2px solid var(--graphite-900)'}}/><b style={{font:'700 15px/1 var(--font-body)',minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</b><S.Badge tone={ST_TONE[baraStockStatus(f.grams)][0]} dot style={{marginLeft:'auto'}}>{ST_TONE[baraStockStatus(f.grams)][1]}</S.Badge>{slots.length>2&&<S.IconButton icon="x" label="Remove" size="sm" variant="ghost" onClick={(e)=>{e.stopPropagation();const n=slots.filter((_,j)=>j!==i);setSlots(n);setSlot(0)}}/>}</div>
+            </div>})}
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>{lightTabs}<S.Switch checked={layers} onChange={setLayers} label="Layer lines"/>{slots.length<4&&<S.Button variant="secondary" size="sm" icon="plus" onClick={()=>{setSlots([...slots,'pla-graphite']);setSlot(slots.length)}}>Add colour</S.Button>}<span style={{...stMono,color:'var(--fg-3)',marginLeft:'auto'}}>Pick a slot, then a swatch →</span></div>
+        </>}
+        {mode==='catalog'&&<>
+          <div><span className="b-overline" style={{color:'var(--fg-3)'}}>Catalog preview</span><h2 className="b-h3" style={{margin:'6px 0 4px'}}>Everything, in {activeFil.name}</h2><p style={{margin:0,font:'400 15px/1.5 var(--font-body)',color:'var(--fg-2)'}}>Shoot products once in neutral grey filament; the shop tints them to any colour on the shelf.</p></div>
+          <CatalogTint models={BARA_MODELS} fil={activeFil} onOpen={(id)=>{setModelId(id);setMode('custom')}}/>
+        </>}
+      </section>
+      <aside style={{borderLeft:'2px solid var(--graphite-900)',background:'var(--paper-0)',padding:24,display:'flex',flexDirection:'column',gap:20,overflow:'auto'}}>
+        {mode!=='catalog'&&<div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <span style={{font:'700 14px/1 var(--font-body)'}}>Model</span>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>{BARA_MODELS.map(m=><button key={m.id} onClick={()=>{setModelId(m.id);setPart('body')}} style={{textAlign:'left',padding:'10px 12px',borderRadius:12,border:'2px solid var(--graphite-900)',background:m.id===modelId?'var(--yolk-500)':'var(--paper-0)',boxShadow:m.id===modelId?'var(--shadow-hard-xs)':'none',cursor:'pointer'}}><div style={{font:'700 14px/1.15 var(--font-body)'}}>{m.name}</div><div style={{...stMono,fontSize:10,color:'var(--fg-2)',marginTop:4}}>SAR {m.price}</div></button>)}</div>
+        </div>}
+        {mode==='custom'&&<div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <span style={{font:'700 14px/1 var(--font-body)'}}>Colouring part</span>
+          <div style={{display:'flex',gap:8}}>{model.parts.map(p=><S.Tag key={p.key} selected={part===p.key} onClick={()=>setPart(p.key)} style={{height:34,padding:'0 12px'}}><span style={{width:12,height:12,borderRadius:3,background:colors[p.key].hex,border:'1.5px solid '+(part===p.key?'var(--paper-0)':'var(--graphite-900)')}}/>{p.label}</S.Tag>)}</div>
+        </div>}
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+          <S.Tabs variant="underline" value={mat} onChange={setMat} items={ST_MATS}/>
+          <FilamentGrid stock={stock} mat={mat} selectedId={activeFil&&activeFil.id} onPick={pick} staff={staff}/>
+        </div>
+        <FilamentDetail fil={activeFil} staff={staff} onAdjust={adjust}/>
+        {mode==='custom'&&<div style={{marginTop:'auto',display:'flex',flexDirection:'column',gap:12,paddingTop:16,borderTop:'2px dashed var(--border-2)'}}>
+          {unavailable.length>0&&<div style={{display:'flex',alignItems:'center',gap:12,padding:10,borderRadius:12,background:'var(--danger-tint)'}}><S.Mascot pose="oops" color={unavailable[0].hex} size={52} animate={false}/><span style={{font:'600 13px/1.35 var(--font-body)'}}>{unavailable[0].name} is out. Staff can still preview it; customers can't order it yet.</span></div>}
+          <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between'}}><span style={{font:'700 15px/1 var(--font-body)'}}>{model.name}</span><span style={{font:'800 30px/1 var(--font-display)'}}><span style={{...stMono,marginRight:4}}>SAR</span>{model.price+upcharge}</span></div>
+          <div style={{display:'flex',gap:10}}><S.Button fullWidth icon="shopping-bag" disabled={unavailable.length>0&&!staff} onClick={()=>toastIt({tone:'success',title:'Combo added to cart',message:model.name+' · '+partKeys.map(k=>colors[k].name).join(' + ')})}>Add combo to cart</S.Button><S.IconButton icon="link" label="Copy combo link" onClick={share}/></div>
+        </div>}
+      </aside>
+    </main>}
+    {toast&&<div style={{position:'fixed',bottom:24,left:24,zIndex:60}}><S.Toast {...toast} onClose={()=>setToastS(null)}/></div>}
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

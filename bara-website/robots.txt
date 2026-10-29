@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /ui_kits/filament-studio/
+# The build (npm run build) appends the Sitemap: line using SITE_URL.
+Disallow: /ops/

@@ -1,0 +1,194 @@
+{
+  "updatedAt": "2026-10-29",
+  "items": [
+    {
+      "id": "tower",
+      "published": true,
+      "name": {
+        "en": "Hex Dice Tower",
+        "ar": "برج النرد"
+      },
+      "description": {
+        "en": "Drop your dice in the top, they tumble down three ramps and land in the tray. Fair rolls, great clatter, no dice under the sofa.",
+        "ar": "ارمِ النرد من فوق، يطيح على ثلاث منحدرات ويوصل الصينية. رمية عادلة، صوت حلو، ولا نرد تحت الكنب."
+      },
+      "price": 89,
+      "currency": "SAR",
+      "materials": [
+        "pla",
+        "petg"
+      ],
+      "category": "games",
+      "tone": "pla",
+      "spec": "0.20 mm · 15% · 6 h",
+      "badge": {
+        "en": "New",
+        "ar": "جديد"
+      },
+      "stats": {
+        "layers": "212",
+        "time": "6 h 12 m",
+        "infill": "15 %",
+        "weight": "84 g"
+      },
+      "images": []
+    },
+    {
+      "id": "insert",
+      "published": true,
+      "name": {
+        "en": "Board Game Insert",
+        "ar": "منظم صندوق اللعبة"
+      },
+      "description": {
+        "en": "Measured for your box so every card and token has a home. Setup goes from ten minutes to one.",
+        "ar": "مقاس على صندوق لعبتك، كل كرت وقطعة لها مكانها. التجهيز ينزل من عشر دقايق لدقيقة."
+      },
+      "price": 120,
+      "currency": "SAR",
+      "materials": [
+        "pla"
+      ],
+      "category": "games",
+      "tone": "yolk",
+      "spec": "0.24 mm · made to fit",
+      "images": []
+    },
+    {
+      "id": "grip",
+      "published": true,
+      "name": {
+        "en": "Squish Grip",
+        "ar": "ماسك مرن"
+      },
+      "description": {
+        "en": "A soft grip for your phone that bends, bounces back and survives the floor.",
+        "ar": "ماسك جوال طري، ينثني ويرجع ويتحمل الطيحات."
+      },
+      "price": 35,
+      "currency": "SAR",
+      "materials": [
+        "tpu"
+      ],
+      "category": "home",
+      "tone": "tpu",
+      "spec": "0.16 mm · TPU",
+      "badge": {
+        "en": "Bendy",
+        "ar": "مرن"
+      },
+      "images": []
+    },
+    {
+      "id": "goblin",
+      "published": true,
+      "name": {
+        "en": "Goblin Desk Tidy",
+        "ar": "منظم مكتب العفريت"
+      },
+      "description": {
+        "en": "A grumpy little goblin that guards your pens. Does not accept bribes.",
+        "ar": "عفريت صغير معصّب يحرس أقلامك. ما يقبل رشوة."
+      },
+      "price": 59,
+      "currency": "SAR",
+      "materials": [
+        "pla"
+      ],
+      "category": "home",
+      "tone": "paper",
+      "spec": "0.20 mm · 20% · 4 h",
+      "images": []
+    },
+    {
+      "id": "meeple",
+      "published": true,
+      "name": {
+        "en": "Meeple Pack ×20",
+        "ar": "قطع ميبل ×٢٠"
+      },
+      "description": {
+        "en": "Twenty chunky meeples in your colours. Lose one, we’ll print you another.",
+        "ar": "عشرين قطعة ميبل بألوانك. ضيعت وحدة؟ نطبع لك غيرها."
+      },
+      "price": 45,
+      "currency": "SAR",
+      "materials": [
+        "pla",
+        "petg"
+      ],
+      "category": "games",
+      "tone": "petg",
+      "spec": "0.12 mm · solid",
+      "images": []
+    },
+    {
+      "id": "snake",
+      "published": true,
+      "name": {
+        "en": "Cable Snake",
+        "ar": "ثعبان الأسلاك"
+      },
+      "description": {
+        "en": "Wraps around a cable bundle and keeps it there. Looks a bit judgy.",
+        "ar": "يلتف على الأسلاك ويخليها مرتبة. ونظرته شوي تحكم."
+      },
+      "price": 25,
+      "currency": "SAR",
+      "materials": [
+        "tpu"
+      ],
+      "category": "home",
+      "tone": "tpu",
+      "spec": "0.20 mm · flexible",
+      "images": []
+    },
+    {
+      "id": "pot",
+      "published": true,
+      "name": {
+        "en": "Strata Planter",
+        "ar": "أصيص الطبقات"
+      },
+      "description": {
+        "en": "Printed in one continuous spiral, so it holds water. The layer lines are the whole point.",
+        "ar": "مطبوع بلفّة وحدة متصلة، عشان كذا ما يسرّب. والطبقات هي الجمال كله."
+      },
+      "price": 75,
+      "currency": "SAR",
+      "materials": [
+        "petg"
+      ],
+      "category": "home",
+      "tone": "petg",
+      "spec": "0.28 mm · vase mode",
+      "badge": {
+        "en": "Watertight",
+        "ar": "ما يسرّب"
+      },
+      "images": []
+    },
+    {
+      "id": "cards",
+      "published": true,
+      "name": {
+        "en": "Card Holder Duo",
+        "ar": "حامل الكروت"
+      },
+      "description": {
+        "en": "Two slanted holders so your hand of cards stays upright and secret.",
+        "ar": "حاملين مايلين يخلون كروتك واقفة ومخفية."
+      },
+      "price": 39,
+      "currency": "SAR",
+      "materials": [
+        "petg",
+        "pla"
+      ],
+      "category": "games",
+      "tone": "paper",
+      "spec": "0.20 mm · 2 pcs",
+      "images": []
+    }
+  ]
+}

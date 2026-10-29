@@ -1,0 +1,17 @@
+<!-- @dsCard group="Brand" viewport="700x250" name="The crew — Tab'a & the Mess Goblin" subtitle="Cheerer + judge, overworked" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px 24px}</style></head><body><div id="root"></div><script type="text/babel">
+const { Mascot, Goblin, SpeechBubble } = window.InfillDesignSystem_d33a9b;
+const cell=(el,l)=><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6}}>{el}<span style={{font:'600 10px/1 var(--font-mono)',letterSpacing:'.08em',textTransform:'uppercase',color:'var(--fg-3)'}}>{l}</span></div>;
+ReactDOM.createRoot(root).render(<div style={{display:'flex',flexDirection:'column',gap:10}}>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+{cell(<Mascot pose="cheer" size={76}/>,'cheer')}{cell(<Mascot pose="hips" size={76}/>,'hips')}{cell(<Mascot pose="peer" color="pla" size={76}/>,'peer')}{cell(<Mascot pose="walk" size={76}/>,'walk')}{cell(<Mascot pose="oops" color="petg" size={76}/>,'oops')}
+{cell(<Goblin mood="judge" size={76}/>,'judge')}{cell(<Goblin mood="hips" size={76}/>,'hips')}{cell(<Goblin mood="peer" size={76}/>,'peer')}{cell(<Goblin mood="walk" size={76}/>,'walk')}{cell(<Goblin mood="shout" size={76}/>,'shout')}
+</div>
+<div style={{display:'flex',gap:12,flexWrap:'wrap'}}><SpeechBubble tone="shout" who="Goblin">Did the dice tower come off yet?!</SpeechBubble><SpeechBubble tone="cheer" who="Tab'a" tail="bottom-end">NO! Layer 140!!</SpeechBubble><SpeechBubble tone="judge" who="Goblin">Pink. Again. Bold.</SpeechBubble></div>
+</div>);
+</script></body></html>

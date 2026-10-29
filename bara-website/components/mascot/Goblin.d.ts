@@ -1,0 +1,2 @@
+/** وحش اللخبطة — the Mess Goblin. Grumpy, overworked shop goblin who eats failed prints (recycling) and judges every choice. Pair with <Mascot> (Tab'a). */
+export interface GoblinProps { mood?: 'judge'|'shout'|'busy'|'approve'|'sleep'|'hips'|'peer'|'walk'|'push'; size?: number; color?: string; animate?: boolean; track?: boolean; /** Masking tape over the mouth (muted). */ taped?: boolean; /** Keep full motion under OS reduced-motion (short user-triggered gags only). */ ignoreReducedMotion?: boolean; style?: React.CSSProperties; }

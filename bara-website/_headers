@@ -1,0 +1,17 @@
+# Netlify / Cloudflare Pages headers. (Vercel: see DEPLOY.md for the vercel.json equivalent.)
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self)
+  X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+/data/*
+  Cache-Control: public, max-age=60, must-revalidate
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+/site.config.js
+  Cache-Control: public, max-age=0, must-revalidate
+/ops/*
+  X-Robots-Tag: noindex, nofollow

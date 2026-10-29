@@ -1,0 +1,23 @@
+<!-- @dsCard group="3D Corner Kiosk" viewport="1280x800" name="3D Corner kiosk" subtitle="In-store: pickup, print, recycle" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bara' — 3D Corner kiosk</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{background:var(--graphite-900)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel" src="Kiosk.jsx"></script>
+<script type="text/babel">
+function App(){
+  const [s,setS]=React.useState('welcome');const [lang,setLang]=React.useState('en');
+  const titles={welcome:'',pickup:'Pick up',print:'Print',recycle:'Recycle'};
+  return <div dir={lang==='ar'?'rtl':'ltr'} style={{width:1280,height:800,margin:'0 auto',background:'var(--paper-1)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+    <KioskTop title={titles[s]} onBack={s==='welcome'?null:()=>setS('welcome')} lang={lang} setLang={setLang}/>
+    {s==='welcome'&&<KioskWelcome go={setS} lang={lang}/>}
+    {s==='pickup'&&<KioskPickup go={setS}/>}
+    {s==='recycle'&&<KioskRecycle go={setS}/>}
+    {s==='print'&&<KioskPrint go={setS}/>}
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

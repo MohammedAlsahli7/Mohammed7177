@@ -1,0 +1,26 @@
+{
+  "name": "bara-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Bara’ website + Ops (inventory, print floor) server. Zero runtime dependencies.",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "start": "node server/index.js",
+    "dev": "BARA_STATIC_DIR=. node server/index.js",
+    "dev:static": "npx --yes serve . -l 5173",
+    "preview": "npx --yes serve dist -l 4173",
+    "check": "node scripts/check-data.cjs",
+    "test": "node --test test/server.test.js",
+    "test:site": "node --test test/site.e2e.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "lucide-static": "0.454.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "three": "0.149.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

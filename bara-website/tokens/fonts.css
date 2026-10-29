@@ -1,0 +1,4 @@
+/* Webfonts — Google Fonts CDN. Baloo 2 (Latin) + Baloo Bhaijaan 2 (Arabic) are the same design family by Ek Type, so bilingual lockups share stroke, x-height feel and terminals. */
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Baloo+Bhaijaan+2:wght@400..800&family=JetBrains+Mono:wght@400;500;700&display=swap");
+/* Iconography — Lucide icon font (rounded 2px stroke, matches Baloo terminals). Use <i class="icon-<name>"></i>. */
+@import url("https://unpkg.com/lucide-static@0.454.0/font/lucide.css");

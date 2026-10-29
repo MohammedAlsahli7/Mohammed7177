@@ -1,0 +1,18 @@
+{
+  "name": "Bara’ — 3D print studio",
+  "short_name": "Bara’",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F5F0E4",
+  "theme_color": "#F2B705",
+  "lang": "en",
+  "dir": "auto",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<!-- @dsCard group="Storefront" viewport="1280x800" name="Storefront" subtitle="Home, catalog, product, custom quote, cart" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bara' — Storefront</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head><body><div id="root"></div>
+<script type="text/babel" src="Shell.jsx"></script>
+<script type="text/babel" src="Browse.jsx"></script>
+<script type="text/babel" src="Detail.jsx"></script>
+<script type="text/babel">
+function App(){
+  const [route,setRoute]=React.useState(()=>localStorage.getItem('bara-sf-route')||'home');
+  const [pid,setPid]=React.useState('tower');
+  const [lang,setLang]=React.useState('en');
+  const [cart,setCart]=React.useState([{...SF_PRODUCTS[0],mat:'pla',qty:1}]);
+  const [cartOpen,setCartOpen]=React.useState(false);
+  const [toast,setToast]=React.useState(null);
+  const go=(r,id)=>{setRoute(r);if(id)setPid(id);localStorage.setItem('bara-sf-route',r);window.scrollTo(0,0)};
+  const addToast=(t)=>{setToast(t);clearTimeout(window.__bt);window.__bt=setTimeout(()=>setToast(null),2800)};
+  const addToCart=(p,q=1)=>{setCart(c=>[...c,{...p,qty:q}]);addToast({tone:'success',title:'Added to cart',message:p.title+' · '+DS.MATERIALS[p.mat||p.mats[0]].name,action:'View'})};
+  const setQty=(i,n)=>setCart(c=>n<=0?c.filter((_,j)=>j!==i):c.map((x,j)=>j===i?{...x,qty:n}:x));
+  return <div dir={lang==='ar'?'rtl':'ltr'} lang={lang}>
+    <SfHeader lang={lang} setLang={setLang} go={go} route={route} cartCount={cart.reduce((s,i)=>s+i.qty,0)} openCart={()=>setCartOpen(true)}/>
+    {route==='home'&&<SfHome go={go} addToCart={addToCart} lang={lang}/>}
+    {route==='catalog'&&<SfCatalog go={go} addToCart={addToCart}/>}
+    {route==='product'&&<SfProduct id={pid} go={go} addToCart={addToCart}/>}
+    {route==='quote'&&<SfQuote addToast={addToast}/>}
+    <SfFooter lang={lang}/>
+    <SfCart open={cartOpen} items={cart} onClose={()=>setCartOpen(false)} setQty={setQty}/>
+    {toast&&<div style={{position:'fixed',bottom:24,left:'50%',transform:'translateX(-50%)',zIndex:60}}><DS.Toast {...toast} onAction={()=>{setCartOpen(true);setToast(null)}} onClose={()=>setToast(null)}/></div>}
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

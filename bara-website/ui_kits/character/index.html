@@ -1,0 +1,69 @@
+<!-- @dsCard group="Character" viewport="1280x820" name="Tab’a character sheet" subtitle="Poses, colourways, UI states, stickers, merch" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Tab’a — character sheet</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const { Mascot, Goblin, SpeechBubble, Wordmark, Button, Card, Badge } = window.InfillDesignSystem_d33a9b;
+const csMono={font:'600 11px/1.2 var(--font-mono)',letterSpacing:'.1em',textTransform:'uppercase'};
+const Sec=({k,t,children})=><section style={{display:'flex',flexDirection:'column',gap:18}}><div><span style={{...csMono,color:'var(--fg-3)'}}>{k}</span><h2 className="b-h3" style={{margin:'4px 0 0'}}>{t}</h2></div>{children}</section>;
+function App(){
+  return <div style={{maxWidth:1240,margin:'0 auto',padding:'32px 32px 64px',display:'flex',flexDirection:'column',gap:56}}>
+    <div style={{display:'grid',gridTemplateColumns:'1.2fr 1fr',gap:40,alignItems:'center',background:'var(--yolk-500)',border:'2px solid var(--graphite-900)',borderRadius:28,padding:40,boxShadow:'var(--shadow-hard-lg)',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,background:'var(--tex-layers)'}}/>
+      <div style={{position:'relative',display:'flex',flexDirection:'column',gap:16}}>
+        <span style={csMono}>Brand character</span>
+        <div style={{display:'flex',alignItems:'baseline',gap:20}}><span style={{font:'800 112px/.85 var(--font-display)',letterSpacing:'-.03em'}}>Tab’a</span><span lang="ar" dir="rtl" style={{font:'800 88px/1 var(--font-arabic)'}}>طبعة</span></div>
+        <p style={{margin:0,font:'600 20px/1.45 var(--font-body)',maxWidth:480}}>Every colour change, the printer spits out a little squiggle of plastic. One of them opened its eyes. Tab’a now works the shop floor — cheering every order, panicking about every deadline, and running from the Mess Goblin.</p>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{['Born: on a colour change','Made of: whatever was in the nozzle','Fear: the bin'].map(x=><span key={x} style={{...csMono,fontSize:10.5,padding:'6px 9px 5px',border:'1.5px solid var(--graphite-900)',borderRadius:8,background:'var(--paper-0)'}}>{x}</span>)}</div>
+      </div>
+      <div style={{position:'relative',display:'flex',justifyContent:'center'}}><Mascot pose="hello" size={320} track/></div>
+    </div>
+
+    <Sec k="00 · The crew" t="Tab’a cheers. The Goblin judges.">
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:20}}>
+        <Card variant="raised" padding={24}><div style={{display:'flex',gap:18,alignItems:'center'}}><Goblin mood="judge" size={150} track/><div style={{display:'flex',flexDirection:'column',gap:8}}><b style={{font:'800 26px/1 var(--font-display)'}}>Mess Goblin <span lang="ar" style={{fontFamily:'var(--font-arabic)'}}>وحش اللخبطة</span></b><span style={{font:'500 15px/1.5 var(--font-body)',color:'var(--fg-2)'}}>Grumpy, overworked, eats failed prints (he is the recycling program). Side-eyes your colour picks; approves rarely.</span><SpeechBubble tone="judge" who="Goblin">Pink. Again. Bold.</SpeechBubble></div></div></Card>
+        <Card variant="raised" padding={24}><div style={{display:'flex',gap:18,alignItems:'center'}}><Mascot pose="cheer" size={150} track/><div style={{display:'flex',flexDirection:'column',gap:8}}><b style={{font:'800 26px/1 var(--font-display)'}}>Tab’a <span lang="ar" style={{fontFamily:'var(--font-arabic)'}}>طبعة</span></b><span style={{font:'500 15px/1.5 var(--font-body)',color:'var(--fg-2)'}}>Frantic, sweet, hypes you up — but sometimes sides with the Goblin or helps push his cart.</span><SpeechBubble tone="cheer" who="Tab’a">You have amazing taste!</SpeechBubble></div></div></Card>
+        <Card variant="flat" padding={24}><div style={{display:'flex',flexDirection:'column',gap:10}}><b style={{font:'800 20px/1 var(--font-display)'}}>Goblin moods</b><div style={{display:'flex',justifyContent:'space-between'}}>{['judge','shout','busy','approve','sleep'].map(m=><div key={m} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}><Goblin mood={m} size={64}/><span style={{...csMono,fontSize:9.5}}>{m}</span></div>)}</div></div></Card>
+      </div>
+    </Sec>
+
+    <Sec k="01 · Poses" t="Five moods, one tangle">
+      <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:16}}>
+        {[['hello','Greeting, onboarding, kiosk attract'],['printing','Loading, quoting, slicing'],['cheer','Success, order placed'],['oops','Errors, failed upload, out of stock'],['sleepy','Empty states, idle, closed']].map(([p,u])=><Card key={p} variant="outlined" padding={16}><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12}}><div style={{height:170,display:'flex',alignItems:'flex-end'}}><Mascot pose={p} size={140}/></div><b style={{font:'800 18px/1 var(--font-display)'}}>{p}</b><span style={{font:'500 13px/1.35 var(--font-body)',color:'var(--fg-2)',textAlign:'center'}}>{u}</span></div></Card>)}
+      </div>
+    </Sec>
+
+    <Sec k="02 · Colourways" t="Two colours, like a real colour change">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',background:'var(--paper-0)',border:'2px solid var(--graphite-900)',borderRadius:20,padding:'24px 32px',backgroundImage:'var(--tex-bed)'}}>
+        {[['yolk','Default'],['pla','PLA'],['petg','PETG'],['tpu','TPU'],['loop','Loop'],['#C9A13B','Silk brass'],['ink','Night / kiosk']].map(([c,l])=><div key={l} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10}}><Mascot pose="hello" color={c} size={110} animate={false}/><span style={{...csMono,fontSize:10}}>{l}</span></div>)}
+      </div>
+    </Sec>
+
+    <Sec k="03 · In product" t="States">
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:20}}>
+        <Card padding={20}><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12,textAlign:'center'}}><Mascot pose="printing" size={110}/><b style={{font:'800 19px/1.1 var(--font-display)'}}>Slicing your file…</b><span style={{...csMono,color:'var(--fg-3)'}}>Layer 148 / 212</span></div></Card>
+        <Card padding={20}><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12,textAlign:'center'}}><Mascot pose="oops" color="pla" size={110} animate={false}/><b style={{font:'800 19px/1.1 var(--font-display)'}}>That STL has holes.</b><span style={{font:'500 13px/1.4 var(--font-body)',color:'var(--fg-2)'}}>Not manifold. Run it through a repair tool and try again.</span><Button size="sm" variant="secondary" icon="upload">Upload again</Button></div></Card>
+        <Card padding={20}><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12,textAlign:'center'}}><Mascot pose="sleepy" color="tpu" size={110}/><b style={{font:'800 19px/1.1 var(--font-display)'}}>The bed is empty.</b><span style={{font:'500 13px/1.4 var(--font-body)',color:'var(--fg-2)'}}>Your cart is waiting for its first print.</span><Button size="sm">Browse the shop</Button></div></Card>
+        <Card variant="inverse" padding={20} texture="bed"><div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12,textAlign:'center'}}><Mascot pose="cheer" size={110}/><b style={{font:'800 19px/1.1 var(--font-display)'}}>Order #B-0412 is in!</b><span style={{font:'500 13px/1.4 var(--font-body)',color:'var(--graphite-300)'}}>Warming the nozzle now.</span><Badge tone="brand">Printer 2 · 6 h 12 m</Badge></div></Card>
+      </div>
+    </Sec>
+
+    <Sec k="04 · Packaging & social" t="Sticker sheet">
+      <div style={{display:'flex',gap:28,alignItems:'center',flexWrap:'wrap'}}>
+        {[['hello','yolk','var(--graphite-900)','var(--yolk-500)','Hi from the mess'],['cheer','pla','var(--paper-0)','var(--graphite-900)','Printed with love'],['oops','petg','var(--yolk-500)','var(--graphite-900)','Blame the supports'],['sleepy','tpu','var(--paper-0)','var(--graphite-900)','Shh… printing']].map(([p,c,bg,fg,t])=><div key={t} style={{width:220,height:220,borderRadius:999,background:bg,border:'3px solid var(--graphite-900)',boxShadow:'0 0 0 8px var(--paper-0), 0 0 0 10px var(--border-2)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6,color:fg}}><Mascot pose={p} color={c} size={110} animate={false}/><span style={{font:'800 15px/1.1 var(--font-display)',textAlign:'center',maxWidth:150}}>{t}</span></div>)}
+        <div style={{width:260,height:180,borderRadius:18,background:'var(--graphite-900)',color:'var(--paper-0)',border:'3px solid var(--graphite-900)',padding:16,display:'flex',alignItems:'center',gap:12,backgroundImage:'var(--tex-bed-inverse)'}}><Mascot pose="sleepy" color="ink" size={90}/><div><span style={{...csMono,color:'var(--yolk-500)',fontSize:10}}>Kiosk idle</span><div style={{font:'800 22px/1.05 var(--font-display)',marginTop:6}}>Tap to wake me up</div><div dir="rtl" style={{font:'700 15px/1.4 var(--font-arabic)',color:'var(--graphite-300)'}}>دقّ عليّ وأصحى</div></div></div>
+      </div>
+    </Sec>
+
+    <Sec k="05 · Rules" t="Keeping Tab’a on-model">
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+        {[['Always','Ink-outlined squiggles with the face floating on top — never a solid body. One Tab’a per screen.'],['Colour','A main strand + a swirl colour, both real filaments. Default yolk + PLA pink. No gradients.'],['Merch','Ships as a 49-SAR printed figure (blob + swirl as two colours) — preview it in the Filament Studio.']].map(([h,b])=><Card key={h} variant="flat" padding={20}><b style={{font:'800 18px/1 var(--font-display)'}}>{h}</b><p style={{margin:'8px 0 0',font:'400 15px/1.5 var(--font-body)',color:'var(--fg-2)'}}>{b}</p></Card>)}
+      </div>
+    </Sec>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

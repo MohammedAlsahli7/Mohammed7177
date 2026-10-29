@@ -1,0 +1,28 @@
+{
+  "currency": "SAR",
+  "setupFee": 15,
+  "fillFactor": 0.35,
+  "rushFee": 30,
+  "buildVolume": [
+    250,
+    250,
+    250
+  ],
+  "materials": {
+    "pla": {
+      "density": 1.24,
+      "perGram": 0.35,
+      "min": 35
+    },
+    "petg": {
+      "density": 1.27,
+      "perGram": 0.42,
+      "min": 45
+    },
+    "tpu": {
+      "density": 1.21,
+      "perGram": 0.6,
+      "min": 49
+    }
+  }
+}

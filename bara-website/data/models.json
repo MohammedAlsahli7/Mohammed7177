@@ -1,0 +1,8 @@
+{
+  "items": [
+    { "id": "tower", "name": "Hex Dice Tower", "ar": "برج النرد", "price": 89, "parts": [{ "key": "body", "label": "Tower" }, { "key": "base", "label": "Tray" }] },
+    { "id": "taba", "name": "Tab'a figure", "ar": "مجسّم طبعة", "price": 49, "parts": [{ "key": "body", "label": "Main strand" }, { "key": "hat", "label": "Swirl" }] },
+    { "id": "planter", "name": "Strata Planter", "ar": "أصيص الطبقات", "price": 75, "parts": [{ "key": "body", "label": "Pot" }, { "key": "base", "label": "Saucer" }] },
+    { "id": "meeple", "name": "Meeple XL", "ar": "ميبل كبير", "price": 29, "parts": [{ "key": "body", "label": "Meeple" }, { "key": "base", "label": "Stand" }] }
+  ]
+}

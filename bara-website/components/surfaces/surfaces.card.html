@@ -1,0 +1,16 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Surfaces" subtitle="Card variants & MediaPlaceholder" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:24px}.row{display:flex;flex-wrap:wrap;align-items:center;gap:16px}.col{display:flex;flex-direction:column;gap:16px}.lbl{font:600 10.5px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3);width:72px;flex-shrink:0}</style>
+</head><body><div id="root"></div><script type="text/babel">
+const NS = window.InfillDesignSystem_d33a9b;
+const { Card, MediaPlaceholder } = NS;
+const v=['flat','outlined','raised','brand','inverse'];
+ReactDOM.createRoot(root).render(<div className="col">
+<div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:16}}>{v.map(x=><Card key={x} variant={x} padding={14} interactive texture={x==='inverse'?'bed':undefined}><div style={{font:'700 15px/1 var(--font-display)'}}>{x}</div><div style={{font:'500 11px/1.4 var(--font-mono)',opacity:.7,marginTop:6}}>card</div></Card>)}</div>
+<div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}><MediaPlaceholder label="Hero shot" tone="paper"/><MediaPlaceholder label="PLA close-up" tone="pla"/><MediaPlaceholder label="PETG" tone="petg" texture="bed"/><MediaPlaceholder label="Studio" tone="ink" texture="bed"/></div>
+</div>);
+</script></body></html>
