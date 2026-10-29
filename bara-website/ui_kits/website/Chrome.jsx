@@ -263,7 +263,16 @@ function SiteFooter({go}) {
   );
 }
 
-function CartDrawer({open, items, onClose, setQty, onCheckout, busy}) {
+function CartDrawer({
+  open,
+  items,
+  onClose,
+  setQty,
+  onCheckout,
+  busy,
+  who,
+  setWho,
+}) {
   const t = useT();
   React.useEffect(() => {
     if (!open) return;
@@ -447,6 +456,7 @@ function CartDrawer({open, items, onClose, setQty, onCheckout, busy}) {
             </span>
             <Price v={total} size={26} />
           </div>
+          {who && items.length > 0 && <CartWho who={who} setWho={setWho} />}
           <B.Button
             size="lg"
             fullWidth
@@ -462,4 +472,52 @@ function CartDrawer({open, items, onClose, setQty, onCheckout, busy}) {
   );
 }
 
-Object.assign(window, {SiteHeader, SiteFooter, CartDrawer});
+// Who the order is for (only when online payment is on).
+function CartWho({who, setWho}) {
+  const t = useT();
+  const i = useLangIdx();
+  const set = (k) => (e) => setWho({...who, [k]: e.target.value});
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+      <b style={{font: '800 18px/1.2 var(--font-display)'}}>
+        {t(SITE.cart.who)}
+      </b>
+      <B.Input
+        size="sm"
+        label={t(SITE.cart.name)}
+        value={who.name}
+        onChange={set('name')}
+      />
+      <B.Input
+        size="sm"
+        type="tel"
+        icon="phone"
+        label={t(SITE.sys.phone)}
+        value={who.phone}
+        onChange={set('phone')}
+      />
+      <B.Input
+        size="sm"
+        type="email"
+        icon="mail"
+        label={t(SITE.sys.email)}
+        value={who.email}
+        onChange={set('email')}
+        error={
+          who.email && !emailOk(who.email) ? t(SITE.sys.emailBad) : undefined
+        }
+      />
+      <span
+        style={{
+          font:
+            '500 13px/1.5 ' + (i ? 'var(--font-arabic)' : 'var(--font-body)'),
+          color: 'var(--fg-2)',
+        }}
+      >
+        {t(SITE.cart.whoHint)} {t(SITE.cart.payWith)}
+      </span>
+    </div>
+  );
+}
+
+Object.assign(window, {SiteHeader, SiteFooter, CartDrawer, CartWho});

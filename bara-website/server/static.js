@@ -36,10 +36,20 @@ const HIDDEN = new Set([
 ]);
 
 module.exports = function register(ctx) {
-  const {staticDir} = ctx;
+  const {staticDir, dataDir, opts} = ctx;
+  // Apple Pay on your own domain needs Apple's verification file at this path.
+  // Download it from the payment provider (or Apple) and either put it in the
+  // data folder or point BARA_APPLE_PAY_DOMAIN_FILE at it.
+  const APPLE_PAY_PATH =
+    '/.well-known/apple-developer-merchantid-domain-association';
+  const applePayFile = () =>
+    opts.applePayDomainFile ||
+    path.join(dataDir, 'apple-developer-merchantid-domain-association');
   // ---- Static site ----
   const configPatch =
-    '\n;(function (c) { /* filled in by the Bara\' server: empty endpoints point at this server */\n  var e = c.endpoints = c.endpoints || {}, s = c.sources = c.sources || {};\n  var api = { quote: "/api/quote", sell: "/api/sell", corner: "/api/corner", floor: "/api/floor", stock: "/api/stock" };\n  for (var k in api) if (!e[k]) e[k] = api[k];\n  if (!s.stock) s.stock = "/api/stock";\n  if (!s.pricing) s.pricing = "/api/pricing";\n})(window.BARA_CONFIG = window.BARA_CONFIG || {});\n';
+    '\n;(function (c) { /* filled in by the Bara\' server: empty endpoints point at this server */\n  var e = c.endpoints = c.endpoints || {}, s = c.sources = c.sources || {};\n  var api = { quote: "/api/quote", sell: "/api/sell", corner: "/api/corner", floor: "/api/floor", stock: "/api/stock" };\n  for (var k in api) if (!e[k]) e[k] = api[k];\n  if (!s.stock) s.stock = "/api/stock";\n  if (!s.pricing) s.pricing = "/api/pricing";\n' +
+    (ctx.payments ? '  if (!e.checkout) e.checkout = "/api/checkout";\n' : '') +
+    '})(window.BARA_CONFIG = window.BARA_CONFIG || {});\n';
   /**
    * @param {!http.IncomingMessage} req
    * @param {!http.ServerResponse} res
@@ -48,6 +58,15 @@ module.exports = function register(ctx) {
    */
   async function serveStatic(req, res, url) {
     const rel = decodeURIComponent(url.pathname);
+    if (rel === APPLE_PAY_PATH) {
+      const txt = await fsp.readFile(applePayFile()).catch(() => null);
+      if (!txt) return notFound(res);
+      res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'public, max-age=3600',
+      });
+      return res.end(txt);
+    }
     const parts = rel.split('/').filter(Boolean);
     if (
       parts.some((p) => p.startsWith('.') || HIDDEN.has(p)) &&

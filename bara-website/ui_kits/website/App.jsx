@@ -171,6 +171,28 @@ function StateScreen({kind, onRetry, go}) {
   );
 }
 
+const WHO_KEY = 'bara-who-v1';
+const whoOk = (w) =>
+  !!(
+    w &&
+    w.name.trim() &&
+    (emailOk(w.email) || /\d{8,}/.test((w.phone || '').replace(/\D/g, '')))
+  );
+/**
+ * Contact details remembered on this device for the next checkout.
+ * @return {{name: string, phone: string, email: string}}
+ */
+function loadWho() {
+  try {
+    const w = JSON.parse(localStorage.getItem(WHO_KEY));
+    if (w && typeof w === 'object') {
+      return {name: '', phone: '', email: '', ...w};
+    }
+  } catch (e) {
+    /* Best effort: storage may be unavailable. */
+  }
+  return {name: '', phone: '', email: ''};
+}
 function loadCart() {
   try {
     const c = JSON.parse(localStorage.getItem(CART_KEY));
@@ -200,6 +222,7 @@ function App() {
   const [cartOpen, setCartOpen] = React.useState(false);
   const [toast, setToastS] = React.useState(null);
   const [checking, setChecking] = React.useState(false);
+  const [who, setWho] = React.useState(loadWho);
   const start = React.useCallback(() => {
     setBoot({status: 'loading'});
     baraApi
@@ -222,6 +245,35 @@ function App() {
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(WHO_KEY, JSON.stringify(who));
+    } catch (e) {
+      /* Best effort: storage may be unavailable. */
+    }
+  }, [who]);
+  // Back from the payment page: /?order=REF&payment=paid|cancelled|pending
+  React.useEffect(() => {
+    if (boot.status !== 'ready') return;
+    const q = new URLSearchParams(location.search);
+    const state = q.get('payment');
+    if (!state) return;
+    const ref = q.get('order') || '';
+    history.replaceState(null, '', location.pathname + location.hash);
+    if (state === 'paid') {
+      setCart([]);
+      crew('cart', {});
+      toastIt({
+        tone: 'success',
+        title: SITE.cart.paid[lang],
+        message: SITE.cart.paidMsg[lang].replace('{ref}', ref),
+      });
+    } else if (state === 'cancelled') {
+      toastIt({tone: 'warning', title: SITE.cart.payCancelled[lang]});
+    } else {
+      toastIt({tone: 'info', title: SITE.cart.payPending[lang]});
+    }
+  }, [boot.status]);
   React.useEffect(() => {
     localStorage.setItem('bara-site-lang', lang);
     document.documentElement.lang = lang ? 'ar' : 'en';
@@ -342,11 +394,16 @@ function App() {
       });
       return;
     }
+    if (!whoOk(who)) {
+      toastIt({tone: 'warning', title: SITE.cart.whoNeeded[lang]});
+      return;
+    }
     setChecking(true);
     try {
       const res = await baraApi.send('checkout', {
         items,
         lang: lang ? 'ar' : 'en',
+        customer: who,
       });
       if (res && res.url) location.href = res.url;
       else throw new Error('no url');
@@ -430,6 +487,8 @@ function App() {
           setQty={setQty}
           onCheckout={checkout}
           busy={checking}
+          who={baraApi.configured('checkout') ? who : null}
+          setWho={setWho}
         />
         {toast && (
           <div

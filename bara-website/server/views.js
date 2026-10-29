@@ -11,6 +11,7 @@ module.exports = function register(ctx) {
   let flushT = null;
   store.onChange((topics) => {
     topics.forEach((t) => pending.add(t));
+    if (topics.includes('orders')) pending.add('checkouts');
     if (topics.includes('jobs') || topics.includes('printers')) {
       pending.add('tasks');
     }
@@ -69,6 +70,11 @@ module.exports = function register(ctx) {
         );
       case 'jobs':
         return jobsView();
+      case 'checkouts':
+        // Payments started but not (yet) confirmed: staff can re-check them.
+        return store.db.checkouts
+          .filter((c) => c.status !== 'paid')
+          .slice(0, 50);
       case 'orders':
         return store.db.orders.slice(0, 200);
       case 'tasks':

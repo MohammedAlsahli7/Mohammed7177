@@ -112,6 +112,8 @@ module.exports = function register(ctx) {
       requests: snapshot('requests'),
       users: snapshot('users', u),
       orders: snapshot('orders'),
+      checkouts: snapshot('checkouts'),
+      payments: ctx.payments ? ctx.payments.name : null,
       tasks: snapshot('tasks'),
       costing: store.db.costing,
       kinds: M.KINDS,

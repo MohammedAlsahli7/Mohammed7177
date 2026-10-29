@@ -2,6 +2,7 @@
 'use strict';
 const http = require('node:http');
 const {HttpError} = require('./http');
+const {createPayments} = require('./payments');
 
 const ROUTES = [
   'public',
@@ -13,6 +14,7 @@ const ROUTES = [
   'costing',
   'orders',
   'requests',
+  'checkout',
 ];
 
 /**
@@ -32,6 +34,12 @@ function createApp(opts = {}) {
   Object.assign(ctx, require('./context')(ctx));
   Object.assign(ctx, require('./views')(ctx));
   Object.assign(ctx, require('./validate')(ctx));
+  ctx.payments = createPayments({
+    provider: opts.payProvider,
+    secretKey: opts.paySecretKey,
+    webhookSecret: opts.payWebhookSecret,
+    apiBase: opts.payApiBase,
+  });
   for (const r of ROUTES) require('./routes/' + r)(ctx);
   const {serveStatic} = require('./static')(ctx);
   const {
@@ -68,7 +76,7 @@ function createApp(opts = {}) {
     const url = new URL(req.url, 'http://local');
     const origin = req.headers.origin && req.headers.origin.replace(/\/$/, '');
     const isPublicApi =
-      /^\/api\/(stock|floor|pricing|quote|sell|corner|health)$/.test(
+      /^\/api\/(stock|floor|pricing|quote|sell|corner|checkout|health)$/.test(
         url.pathname,
       );
     if (origin && isPublicApi && allowedOrigins.has(origin)) {
@@ -91,7 +99,7 @@ function createApp(opts = {}) {
           origin &&
           !sameOrigin(req) &&
           !(isPublicApi && allowedOrigins.has(origin)) &&
-          !/\/telemetry$/.test(url.pathname)
+          !/\/telemetry$|^\/api\/payments\/webhook\//.test(url.pathname)
         ) {
           throw new HttpError(403, 'Cross-site request blocked');
         }

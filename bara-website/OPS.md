@@ -64,21 +64,41 @@ margin     = (price ex VAT − cost) ÷ price ex VAT
 - **Finished jobs** get their actual cost from real grams and real print time. Jobs from paid orders also get revenue, profit and margin.
 - **Website estimate**: `/api/pricing` publishes a rate card derived from these settings, so the shop's rough price follows your costs without exposing them.
 
-## Paid orders
-Your payment provider's webhook (or your store system) sends paid orders to:
+## Online payment and paid orders
+Set `BARA_PAY_PROVIDER` (**moyasar**, **tap** or **stripe**), `BARA_PAY_SECRET_KEY` and `BARA_PUBLIC_URL` in `.env`. The cart then asks for name and phone or email, and **Checkout** sends the customer to the provider's payment page.
+
+1. `POST /api/checkout` re-prices the cart from `products.json` and the live shelf (browser prices are ignored, out-of-stock colours refused), creates the payment and returns its page.
+2. After paying, the customer comes back through `GET /api/payments/return?ref=…`. The provider also calls **`POST /api/payments/webhook/<provider>`**. Set that URL in the provider dashboard: `https://your-domain.sa/api/payments/webhook/moyasar` (or `/tap`, `/stripe`).
+3. Neither is trusted on its own. The server asks the provider's API whether that payment is paid, for the right amount in SAR, then creates the order **once** (one job per unit, routed). Forged or repeated webhooks do nothing.
+4. Ops → Queue → **Paid orders** shows the customer, total and how they paid (Apple Pay, mada, card…). **Payments not confirmed yet** lists checkouts still waiting, with **Re-check** in case a confirmation was lost. An amount mismatch is flagged and never queued.
+
+### Apple Pay, Google Pay, Samsung Pay, mada, STC Pay
+These aren't separate endpoints: they are **payment methods on the provider's payment page**. Switch them on in the provider's dashboard and they appear for customers whose phone supports them. The order records which one was used.
+
+| | Apple Pay | Google Pay | Samsung Pay | mada | STC Pay |
+|---|---|---|---|---|---|
+| **Moyasar** | ✓ | ask | ✓ | ✓ | ✓ |
+| **Tap** | ✓ | ✓ | ✓ | ✓ | ask |
+| **Stripe** | ✓ | ✓ | — | — | — |
+
+*Availability depends on your account; "ask" means confirm with the provider. Stripe, as far as we know, doesn't open accounts for Saudi-registered businesses and has no mada. For a Saudi shop, Moyasar or Tap is the practical choice.*
+
+- **Apple Pay** needs your domain verified with Apple when the button runs on your own domain. Download the `apple-developer-merchantid-domain-association` file from the provider's dashboard and put it in the data folder (or set `BARA_APPLE_PAY_DOMAIN_FILE`). The server serves it at `/.well-known/apple-developer-merchantid-domain-association`.
+- Google Pay and Samsung Pay need nothing on our side; the provider handles them on its page.
+
+### Orders from other systems
+A store system or your own adapter can post paid orders directly:
 
 ```
 POST /api/orders
 Authorization: Bearer <BARA_ORDER_TOKEN>
 Content-Type: application/json
 
-{ "ref": "WEB-2041", "paid": true,
+{ "ref": "WEB-2041", "paid": true, "customer": {"name": "…", "phone": "…"},
   "items": [ { "productId": "tower", "material": "pla", "colour": "#F2B705", "qty": 2, "unitPrice": 89 },
              { "title": "Meeple set", "colours": ["#F2B705", "#232327", "#E8367A"], "grams": 45 } ] }
 ```
-- Only `paid: true` orders are accepted. **The same `ref` twice is ignored**, so webhook retries are safe.
-- `colour` / `colours` are matched exactly to shelf colours (the hex the shop sends). An unknown colour leaves the job unrouted with a note.
-- Most providers (Moyasar, Tap, HyperPay, Stripe, Salla, Zid…) send their own payload and signature. Put a small adapter in front that verifies the signature and maps it to the body above. Checkout itself still needs that provider (see DEPLOY.md).
+`BARA_ORDER_TOKEN` is a password **you invent** (a long random string). Only systems that know it can add orders this way. The same `ref` twice is ignored.
 
 ## Connecting printers
 - **Klipper / Moonraker** (Qidi, Creality K-series, Voron, Sovol, Elegoo…): address `http://<printer-ip>:7125`, then **Test connection**. API key only if Moonraker authorization is on. Reports layers and the real filament used.

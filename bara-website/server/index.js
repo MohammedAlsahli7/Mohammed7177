@@ -53,6 +53,12 @@ const {server, store, floor} = createApp({
   pollMs: +env.BARA_PRINTER_POLL_MS || 5000,
   maxUploadMB: +env.BARA_MAX_UPLOAD_MB || 100,
   orderToken: env.BARA_ORDER_TOKEN || '',
+  publicUrl: env.BARA_PUBLIC_URL || '',
+  payProvider: env.BARA_PAY_PROVIDER || '',
+  paySecretKey: env.BARA_PAY_SECRET_KEY || '',
+  payWebhookSecret: env.BARA_PAY_WEBHOOK_SECRET || '',
+  payApiBase: env.BARA_PAY_API_BASE || '',
+  applePayDomainFile: env.BARA_APPLE_PAY_DOMAIN_FILE || '',
 });
 
 if (!store.db.users.length) {

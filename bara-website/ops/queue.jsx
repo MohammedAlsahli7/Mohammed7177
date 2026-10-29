@@ -360,62 +360,6 @@ function JobRow({j, onEdit}) {
   );
 }
 
-function OrdersTable() {
-  const {data} = useOps();
-  if (!data.orders.length) {
-    return (
-      <Empty title="No paid orders yet" pose="hello">
-        <span>
-          Paid orders from the shop or your payment provider land here and are
-          queued automatically.
-        </span>
-      </Empty>
-    );
-  }
-  return (
-    <div className="o-scroll">
-      <table className="o-table">
-        <thead>
-          <tr>
-            <th>Order</th>
-            <th>Items</th>
-            <th>Jobs</th>
-            <th>When</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.orders.map((o) => (
-            <tr key={o.id}>
-              <td className="o-mono">{o.ref}</td>
-              <td>
-                {o.items.map((l, i) => (
-                  <div key={i} className="o-row o-nowrap">
-                    <Swatch hex={l.hex} size={14} />
-                    {l.qty} × {l.title}
-                  </div>
-                ))}
-              </td>
-              <td className="o-mono">
-                {o.items
-                  .flatMap((l) => l.jobs)
-                  .map((id) => {
-                    const j = data.jobs.find((x) => x.id === id);
-                    return (
-                      <div key={id}>
-                        {id} · {j ? JOB_BADGE[j.status][1] : 'archived'}
-                      </div>
-                    );
-                  })}
-              </td>
-              <td className="o-mono o-dim">{fmtAgo(o.at)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 function QueuePage({sub, go, preset}) {
   const {data} = useOps();
   const act = useAct();
@@ -515,4 +459,4 @@ function QueuePage({sub, go, preset}) {
   );
 }
 
-Object.assign(window, {ColourList, JobDialog, JobRow, OrdersTable, QueuePage});
+Object.assign(window, {ColourList, JobDialog, JobRow, QueuePage});

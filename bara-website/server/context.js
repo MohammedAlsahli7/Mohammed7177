@@ -101,7 +101,7 @@ module.exports = function register(ctx) {
   // slots, new collections.
   {
     let dirty = false;
-    for (const k of ['orders', 'upkeepLog', 'tasks']) {
+    for (const k of ['orders', 'upkeepLog', 'tasks', 'checkouts']) {
       if (!Array.isArray(store.db[k])) {
         store.db[k] = [];
         dirty = true;

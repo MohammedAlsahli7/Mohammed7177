@@ -318,6 +318,36 @@ window.SITE = {
     sub: ['Subtotal', 'المجموع'],
     checkout: ['Checkout', 'إتمام الطلب'],
     added: ['Added to cart', 'انضاف للسلة'],
+    who: ['Who’s it for?', 'باسم مين الطلب؟'],
+    name: ['Your name', 'اسمك'],
+    whoHint: [
+      'We message you when it’s off the bed. Phone or email is enough.',
+      'نرسل لك أول ما يطلع من الطابعة. يكفي جوال أو إيميل.',
+    ],
+    whoNeeded: [
+      'Add your name and a phone or email.',
+      'اكتب اسمك، وجوالك أو إيميلك.',
+    ],
+    payWith: [
+      'Pay by card, mada or your phone’s wallet on the next page.',
+      'ادفع ببطاقتك أو مدى أو محفظة جوالك بالصفحة الجاية.',
+    ],
+    paid: [
+      'Paid. It’s in the print queue.',
+      'تم الدفع. طلبك دخل طابور الطباعة.',
+    ],
+    paidMsg: [
+      'Order {ref}. We’ll message you when it’s ready.',
+      'رقم طلبك {ref}. نكلمك أول ما يجهز.',
+    ],
+    payCancelled: [
+      'Payment cancelled. Your cart is still here.',
+      'ألغيت الدفع. سلتك محفوظة.',
+    ],
+    payPending: [
+      'Payment still confirming. We’ll message you.',
+      'الدفع لسّا يتأكد. نرسل لك أول ما يوصل.',
+    ],
   },
   footer: {
     blurb: [

@@ -18,6 +18,7 @@ const LIVE_TOPICS = [
   'orders',
   'tasks',
   'costing',
+  'checkouts',
   'inventory',
 ];
 const parseOpsRoute = () => {

@@ -9,6 +9,7 @@ Data lives in one folder (`BARA_DATA_DIR`): `db.json` (inventory, jobs, printers
 
 ## 1. Fill in before launch
 - [ ] `.env` from `.env.example`: `BARA_SECRET`, `BARA_ADMIN_PASSWORD` (first admin), `NODE_ENV=production`, and `BARA_ORDER_TOKEN` if paid orders will be posted in
+- [ ] Payments: `BARA_PAY_PROVIDER`, `BARA_PAY_SECRET_KEY`, `BARA_PUBLIC_URL`; set the webhook URL `https://your-domain.sa/api/payments/webhook/<provider>` in the provider dashboard; switch on Apple Pay / Google Pay / Samsung Pay / mada there; Apple Pay domain file in the data folder (see OPS.md)
 - [ ] Ops → **Pricing → Cost settings**: your filament SAR/kg, operator SAR/h, electricity, printer prices, markup. The website estimate follows them
 - [ ] Ops → **Printers**: slot count (AMS), running costs, and the odometer for used machines
 - [ ] `site.config.js`: `contactEmail`, `whatsapp`, `mapsUrl`. Leave `endpoints` empty: the server fills in its own. Set `checkout` only when you have a payment backend.
@@ -57,7 +58,7 @@ npm run build && npm run test:site    # browser: every shop page EN/AR, cart, qu
 `dist/` still works on Netlify, Cloudflare Pages or S3 as a brochure site. Forms fall back to email, the floor shows the crew without a queue, and stock comes from `data/stock.json`. To keep the static site there but use this server for data, set the full URLs in `site.config.js → endpoints/sources` and list the site's origin in `BARA_ALLOWED_ORIGINS`.
 
 ## Known limitations / next steps
-- **Checkout** still needs a payment provider. The endpoint must re-price items server-side and return `{ url }`.
+- **Delivery**: checkout charges the shop price with no shipping line (pickup). Add a delivery fee to the checkout route if you ship.
 - Routes are hash-based (`/#/shop`), so search engines index only the home page. For per-product SEO, move to path routing or prerender product pages.
 - Customer-facing files are downloaded from Ops as-is. Scan uploads if your threat model needs it.
 - The JSON store suits one studio well: hundreds of spools, thousands of jobs, a handful of staff. Running several server instances at once needs a real database behind `server/store.js`.

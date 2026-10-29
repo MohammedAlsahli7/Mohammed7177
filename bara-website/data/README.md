@@ -46,7 +46,7 @@ Community items appear (home section + shop tab) only when at least one exists. 
 | `quote` | POST multipart | `file, material, speed(std|rush), notes, email, lang, dims_mm?, volume_cm3?, estimate?` | 2xx |
 | `sell` | POST multipart | `file, title, kind(orig|cur), email, lang, link?, licence?, platform?, ownership_confirmed?` | 2xx |
 | `corner` | POST JSON | `{ name, company, city, size, phone, email, lang }` | 2xx |
-| `checkout` | POST JSON | `{ items: [{ id, material, colour, qty, unitPrice }], lang }` — **re-price server-side** | `{ url }` → redirect to payment |
+| `checkout` | POST JSON | `{ items: [{ id, material, colour, qty }], lang, customer: { name, phone, email } }` — re-priced server-side; set automatically when `BARA_PAY_PROVIDER` is configured | `{ url, ref }` → redirect to payment |
 | `floor` | GET (polled) | — | `[{ id, item, name?, hex, printer, layer, total, status: printing|queued|done|failed }]` — no customer data |
 | `creator` | GET (cookies) | — | `{ points, listings: [{ name:{en,ar}, kind, sales, points, status: live|review }] }` |
 | `orders` *(server)* | POST JSON, `Authorization: Bearer BARA_ORDER_TOKEN` | `{ ref, paid: true, items: [{ productId?, title?, material?, colour?, colours?, qty, unitPrice?, grams? }] }` — idempotent on `ref` | `{ ref, jobs: [{ id, printer, note }] }` |
