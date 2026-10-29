@@ -8,7 +8,7 @@ Each file can be replaced by an API/CMS URL in `site.config.js → sources` (sam
 | `products.json` | Home "Fresh off the printer", Shop, Product pages, cart prices | CMS / commerce API |
 | `stock.json` | Every colour swatch (only `in`/`low` colours are orderable), Filament Studio | Inventory API |
 | `models.json` | Filament Studio 3D models | — (tied to procedural models in `Viewer3D.jsx`) |
-| `pricing.json` | "Print your file" rough estimate | Pricing service |
+| `pricing.json` | "Print your file" rough estimate (build volume, densities) | With the server: `/api/pricing`, derived from Ops → Pricing cost settings |
 
 ## products.json
 ```jsonc
@@ -49,6 +49,7 @@ Community items appear (home section + shop tab) only when at least one exists. 
 | `checkout` | POST JSON | `{ items: [{ id, material, colour, qty, unitPrice }], lang }` — **re-price server-side** | `{ url }` → redirect to payment |
 | `floor` | GET (polled) | — | `[{ id, item, name?, hex, printer, layer, total, status: printing|queued|done|failed }]` — no customer data |
 | `creator` | GET (cookies) | — | `{ points, listings: [{ name:{en,ar}, kind, sales, points, status: live|review }] }` |
+| `orders` *(server)* | POST JSON, `Authorization: Bearer BARA_ORDER_TOKEN` | `{ ref, paid: true, items: [{ productId?, title?, material?, colour?, colours?, qty, unitPrice?, grams? }] }` — idempotent on `ref` | `{ ref, jobs: [{ id, printer, note }] }` |
 | `stock` | PUT JSON | full stock `items` array (staff only — protect with auth) | 2xx |
 
 All requests send `Accept: application/json` and `credentials: include`; enable CORS for your site origin if the API is on another domain.

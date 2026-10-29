@@ -18,7 +18,12 @@
 See `design_handoff_bara_website/README.md` (architecture, screens, behaviour, tokens) and `DEPLOY.md` (launch checklist).
 
 ## Server & Ops
-- `server/` is plain Node (no runtime deps): `app.js` routes + validation, `floor.js` printer connectors + job lifecycle, `store.js` JSON store, `auth.js` sessions.
-- `ops/Ops.jsx` is the staff dashboard (English only, internal). It uses the same design-system components and tokens.
+- `server/` is plain Node (no runtime deps). `app.js` = glue; `context.js` shared state + request helpers; `views.js` snapshots, public floor, live events; `validate.js` input validation + job state machine; `routes/*.js` one file per area; `floor.js` printer connectors + job lifecycle; `router.js` job routing with fewest spool swaps + operator load tasks; `maintenance.js` wear counters + due tasks; `costing.js` cost / price / margin model; `store.js` JSON store; `auth.js` sessions.
+- `ops/*.jsx` is the staff dashboard (English only, internal), one file per section, sharing globals via `Object.assign(window, …)`; load order in `ops/index.html`.
 - Website endpoints left empty in `site.config.js` are filled in by the server at `/site.config.js`. Keep that contract (`data/README.md`) when changing the API.
 - Every change to the API gets a test in `test/server.test.js`. UI flows get one in `test/site.e2e.cjs`.
+
+## Code style (enforced by `npm run check`)
+- Google JavaScript Style Guide via ESLint `eslint-config-google`, plus Prettier (80 columns, single quotes, trailing commas, no spaces inside braces). `npm run format` fixes most things.
+- JSDoc on every server function and class (`require-jsdoc`, `valid-jsdoc`). Components are documented by their file header and `.d.ts`.
+- **Max 20,000 characters per source file** (`scripts/check-size.cjs`). Split along top-level declarations into a new file and add it to the page's script list in load order.

@@ -8,7 +8,9 @@ One small Node server (no runtime dependencies) runs everything:
 Data lives in one folder (`BARA_DATA_DIR`): `db.json` (inventory, jobs, printers, accounts, inbox) and `uploads/` (customer model files). **Back that folder up.**
 
 ## 1. Fill in before launch
-- [ ] `.env` from `.env.example`: `BARA_SECRET`, `BARA_ADMIN_PASSWORD` (first admin), `NODE_ENV=production`
+- [ ] `.env` from `.env.example`: `BARA_SECRET`, `BARA_ADMIN_PASSWORD` (first admin), `NODE_ENV=production`, and `BARA_ORDER_TOKEN` if paid orders will be posted in
+- [ ] Ops → **Pricing → Cost settings**: your filament SAR/kg, operator SAR/h, electricity, printer prices, markup. The website estimate follows them
+- [ ] Ops → **Printers**: slot count (AMS), running costs, and the odometer for used machines
 - [ ] `site.config.js`: `contactEmail`, `whatsapp`, `mapsUrl`. Leave `endpoints` empty: the server fills in its own. Set `checkout` only when you have a payment backend.
 - [ ] `data/products.json`: every product, price and description is real
 - [ ] `data/stock.json`: the starting filament shelf. It's imported **once**, on first start. After that, stock lives in Ops.
@@ -42,8 +44,9 @@ Keep it running with systemd, pm2 or your host's process manager.
 - **Network printers (Klipper/Moonraker, OctoPrint) are polled by the server**, so the server must reach them. Simplest setup: run the server on a small machine inside the studio (mini-PC, Raspberry Pi 4/5, NAS) and expose it with a Cloudflare Tunnel or Tailscale Funnel. If it runs in the cloud instead, use **push** printers (a bridge in the studio sends status out), or a VPN back to the studio.
 - Proxies must not buffer `/api/events` (live updates). nginx: `proxy_buffering off;` for that path. Caddy and Cloudflare are fine as they are.
 
-## 4. Tests
+## 4. Checks and tests
 ```bash
+npm run check                         # data, file size (≤ 20,000 chars), ESLint (Google style), Prettier
 npm test                              # API: auth, inventory, jobs, printer connectors, uploads (no deps)
 npm run build && npm run test:site    # browser: every shop page EN/AR, cart, quote upload, 3D Corner form,
                                       # characters + live floor, all UI kits, mobile layout, Ops dashboard

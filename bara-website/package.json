@@ -9,13 +9,21 @@
     "dev": "BARA_STATIC_DIR=. node server/index.js",
     "dev:static": "npx --yes serve . -l 5173",
     "preview": "npx --yes serve dist -l 4173",
-    "check": "node scripts/check-data.cjs",
+    "check": "npm run check:data && npm run check:size && npm run lint",
     "test": "node --test test/server.test.js",
-    "test:site": "node --test test/site.e2e.cjs"
+    "test:site": "node --test test/site.e2e.cjs",
+    "check:data": "node scripts/check-data.cjs",
+    "check:size": "node scripts/check-size.cjs",
+    "lint": "eslint . && prettier --check \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\"",
+    "format": "prettier --write \"server/**/*.js\" \"ops/**/*.{jsx,css}\" \"test/**/*\" \"scripts/**/*.cjs\" \".eslintrc.cjs\" \"ui_kits/**/*.{js,jsx,css}\" \"components/**/*.{js,jsx}\" \"tokens/*.css\" \"styles.css\" \"site.config.js\" && eslint --fix ."
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
+    "eslint": "^8.57.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-react": "^7.37.5",
     "lucide-static": "0.454.0",
+    "prettier": "^3.3.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "three": "0.149.0"

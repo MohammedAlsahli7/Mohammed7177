@@ -1,0 +1,9 @@
+dist/
+node_modules/
+var/
+_ds_bundle.js
+_ds_manifest.json
+*.md
+*.html
+data/
+package-lock.json

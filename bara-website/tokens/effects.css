@@ -1,23 +1,48 @@
-:root{
-/* Hard offset shadows — the tactile, toy-box signature. Always ink, never blurred. */
---shadow-hard-xs:2px 2px 0 var(--graphite-900);
---shadow-hard-sm:3px 3px 0 var(--graphite-900);
---shadow-hard:5px 5px 0 var(--graphite-900);
---shadow-hard-lg:8px 8px 0 var(--graphite-900);
-/* Soft — only for floating layers (menus, toasts, dialogs over imagery) */
---shadow-float:0 2px 4px rgba(22,22,26,.08),0 12px 32px rgba(22,22,26,.16);
---shadow-focus:0 0 0 3px var(--paper-0),0 0 0 5px var(--focus-ring);
-/* Motion — snappy, slightly springy like a print head */
---ease-out:cubic-bezier(.2,.8,.2,1);/* @kind other */
---ease-spring:cubic-bezier(.34,1.56,.64,1);/* @kind other */
---ease-in-out:cubic-bezier(.65,0,.35,1);/* @kind other */
---dur-fast:110ms;/* @kind other */--dur-base:180ms;/* @kind other */--dur-slow:320ms;/* @kind other */
-/* Textures */
---tex-layers:repeating-linear-gradient(0deg,rgba(22,22,26,.07) 0 1px,transparent 1px 5px);/* @kind other */
---tex-layers-strong:repeating-linear-gradient(0deg,rgba(22,22,26,.16) 0 2px,transparent 2px 7px);/* @kind other */
---tex-bed:radial-gradient(circle,rgba(22,22,26,.18) 1.2px,transparent 1.6px) 0 0/20px 20px;/* @kind other */
---tex-bed-inverse:radial-gradient(circle,rgba(252,250,244,.16) 1.2px,transparent 1.6px) 0 0/20px 20px;/* @kind other */
---scrim:rgba(13,13,15,.55);
+:root {
+  /* Hard offset shadows — the tactile, toy-box signature. Always ink, never blurred. */
+  --shadow-hard-xs: 2px 2px 0 var(--graphite-900);
+  --shadow-hard-sm: 3px 3px 0 var(--graphite-900);
+  --shadow-hard: 5px 5px 0 var(--graphite-900);
+  --shadow-hard-lg: 8px 8px 0 var(--graphite-900);
+  /* Soft — only for floating layers (menus, toasts, dialogs over imagery) */
+  --shadow-float: 0 2px 4px rgba(22, 22, 26, 0.08),
+    0 12px 32px rgba(22, 22, 26, 0.16);
+  --shadow-focus: 0 0 0 3px var(--paper-0), 0 0 0 5px var(--focus-ring);
+  /* Motion — snappy, slightly springy like a print head */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); /* @kind other */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* @kind other */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --dur-fast: 110ms; /* @kind other */
+  --dur-base: 180ms; /* @kind other */
+  --dur-slow: 320ms; /* @kind other */
+  /* Textures */
+  --tex-layers: repeating-linear-gradient(
+    0deg,
+    rgba(22, 22, 26, 0.07) 0 1px,
+    transparent 1px 5px
+  ); /* @kind other */
+  --tex-layers-strong: repeating-linear-gradient(
+    0deg,
+    rgba(22, 22, 26, 0.16) 0 2px,
+    transparent 2px 7px
+  ); /* @kind other */
+  --tex-bed: radial-gradient(
+      circle,
+      rgba(22, 22, 26, 0.18) 1.2px,
+      transparent 1.6px
+    )
+    0 0/20px 20px; /* @kind other */
+  --tex-bed-inverse: radial-gradient(
+      circle,
+      rgba(252, 250, 244, 0.16) 1.2px,
+      transparent 1.6px
+    )
+    0 0/20px 20px; /* @kind other */
+  --scrim: rgba(13, 13, 15, 0.55);
 }
-.tex-layers{background-image:var(--tex-layers)}
-.tex-bed{background:var(--tex-bed)}
+.tex-layers {
+  background-image: var(--tex-layers);
+}
+.tex-bed {
+  background: var(--tex-bed);
+}

@@ -1,63 +1,98 @@
-# Bara’ Ops: inventory and the print floor
+# Bara’ Ops: the print floor, stock, maintenance and money
 
-Staff dashboard at **`/ops/`**. Everything updates live: open it on the shop-floor screen and on your phone at the same time.
+Staff dashboard at **`/ops/`**. Everything updates live, so you can keep it open on the shop-floor screen and on your phone at the same time.
 
 | Section | What it's for |
 |---|---|
-| **Floor** | One card per printer: status, current job, progress / layer, ETA, nozzle and bed temps, loaded spool. Pause, resume and cancel (network printers); Done / Failed / layer updates (manual printers). |
-| **Queue** | Every print job. Create one (catalogue product or custom), pick the spool, assign a printer, start, finish, re-queue. |
-| **Inventory** | Filament by colour (grams, shelf, status), plus parts & supplies (nozzles, plates, boxes, finished goods…) with reorder levels. **History** logs every change and who made it. |
-| **Inbox** | Submissions from the website: *Print my file* quotes (with the model file), *Sell with us*, *3D Corner*. One click turns a quote into a print job. |
-| **Printers** *(admin)* | Add printers and how they connect. |
+| **Floor** | One card per printer: status, current job, progress / layer, ETA, temperatures, the spools in its slots (AMS). Above the cards: **Needs a person**, everything waiting on a human right now. |
+| **Queue** | Every print job, single or multi-colour. Create, assign (or auto-assign), start, finish, re-queue. The **Paid orders** tab shows orders that arrived already paid. |
+| **Inventory** | Filament by colour (grams, shelf, SAR/kg, status), parts & supplies with reorder levels, and the full change history. |
+| **Maintenance** | Per printer: print hours, filament through it (kg and metres), jobs, nozzle. Recurring tasks fall due on hours, filament or days. Out-of-service switch. |
+| **Pricing** | Cost / price / margin calculator, margins of every catalogue product, and the cost settings behind them. |
+| **Inbox** | Website submissions. Price a quote with the calculator, email it, and turn it into a job. |
+| **Printers** *(admin)* | Connections, slot count, running costs, odometer. |
 | **Team** *(admin)* | Staff accounts. Everyone can change their own password. |
 
-Roles: **staff** run the floor, queue, inventory and inbox, and can swap a printer's loaded spool. **Admins** also manage printers, accounts and stock thresholds.
+Roles: **staff** run the floor, queue, inventory, maintenance and inbox. **Admins** also manage printers, cost settings and accounts.
 
-## How stock and the shop stay in sync
-- The shop only offers colours that are **In** or **Low** (≥ 300 g by default). **Out** colours disappear from the shop instantly. They stay visible in Ops and in Filament Studio.
-- Filament comes off the shelf **automatically when a job finishes**:
-  1. the real amount the printer reports (Klipper reports millimetres used; push agents can send grams), otherwise
-  2. the job's **filament estimate**, or a share of it for a failed or cancelled print.
-  It's taken from the job's spool, or from the spool loaded in that printer.
-- Received a delivery? **+1 kg** on the colour, or **Adjust** for any amount with a reason.
-- Filament Studio's staff mode (`/ui_kits/filament-studio/?staff`) saves into the same inventory. You must be signed in to Ops.
+## What needs an operator, and what doesn't
 
-## Linking prints to printers
-A job is **queued** until it's on a printer, **printing/paused** while running, then **done / failed / cancelled**.
+| Automatic | Needs a person (shows in **Needs a person**) |
+|---|---|
+| A paid order becomes print jobs: one per unit, colour matched to a spool. | **Loading a spool**: "Load PLA Bubblegum into P2 slot 3, from P3 slot 1 / shelf A1". |
+| Each job is routed to the printer that needs the fewest spool swaps, then the shortest queue. | **Clearing the plate** after a print finishes or fails, and checking it. |
+| Network printers report start, layer, progress and finish. The job follows them. | **Starting the print** on the printer (slicing, sending the file, pressing start). The server doesn't upload G-code. |
+| Filament used comes off the spool's stock when a job finishes (the printer's real figure if it reports one, otherwise the estimate). | **Maintenance due** (cleaning, lubrication, nozzle swap, belts). Logging it resets the counter, and can take the part off the parts shelf. |
+| Wear counters (hours, grams, metres, jobs) and maintenance due dates update themselves. | **Out of service**: a person marks it, with a reason. Its queued jobs move to other printers automatically. |
+| Out-of-stock colours disappear from the shop. The website's price estimate follows the cost settings. | **Restocking** low colours and parts, and **packing / handing over** finished orders. |
+| Load and clear-plate tasks close themselves when a printer reports the colour loaded (Bambu bridge) or starts its next print. | **Pricing custom quotes**: the calculator does the maths, a person checks the model and sends the price. |
 
-- **Network printers** (Klipper/Moonraker, OctoPrint) are polled every few seconds. When a printer **starts printing**, the server links it to the queued job assigned to that printer. A job whose *G-code file name* matches the file wins; otherwise the oldest one does. From then on, layer, progress and finish come from the printer. You only queue and assign; the printer does the rest.
-- **Manual printers**: press **Start** on the card or in the queue, type the layer now and then if you like, then **Done** or **Failed**.
-- The website's live floor (home page) shows printing, queued and recently finished jobs: job number, product name (or "Custom print"), colour, printer number and layer. **No customer details are ever shown.**
+Manual printers (no connection) also need a person to press **Start**, enter layers now and then if you like, and press **Done / Failed**.
 
-## Connecting printers
+## Spools, AMS and routing with the fewest swaps
+- Each printer has **slots**: 1 for a single spool, 4 per AMS unit, up to 16. Set what's loaded on its Floor card. Bambu bridges can report the AMS colours themselves (see Push below).
+- A job lists every colour it needs. Multi-colour prints need several slots.
+- **Routing** sends a queued job to the in-service printer that already has the most of its colours loaded, so the fewest swaps. Ties go to the printer with the least work waiting.
+- If colours are missing, the job is still assigned, and the operator gets a **load task**. It names the slot (an empty one, or one the printer's other queued jobs don't need) and where the spool is: on another printer, or its shelf. Until it's done, the job shows "waiting for…" and can't be started.
+- Jobs that came from paid orders route themselves. Jobs you create can too: leave the printer empty and keep "Pick automatically". **Auto-assign** in the Queue routes everything still unassigned.
 
-### Klipper / Moonraker: Qidi Q2 / Q1 / X-series, Creality K1/K2, Voron, Sovol SV08, Elegoo…
-- Connection: **Klipper / Moonraker**. Address: `http://<printer-ip>:7125`. Moonraker's port is usually 7125. If Fluidd or Mainsail opens on port 80, `http://<printer-ip>` often works too.
-- Use **Test connection**. API key only if you turned on Moonraker authorization (`[authorization]` with API keys).
-- Give printers a fixed IP (a DHCP reservation in the router) so the address doesn't change.
+## Maintenance
+- Every printer starts with sensible tasks: clean bed / nozzle (50 h or 14 days), fans (300 h or 90 days), lubrication (250 h or 90 days), extruder gears (10 kg), belts and screws (500 h or 180 days), nozzle (5 kg). Edit them per printer. Intervals can be **print hours, kg printed, metres of filament, or days**, and a task is due at whichever comes first.
+- Status: **OK**, then **Soon** at 80 %, then **Due**. Due tasks show on the Floor and in Needs a person.
+- **Done** resets that task's counters. It can take a part from inventory (e.g. a 0.4 mm brass nozzle), and for nozzle tasks it records the new nozzle (size and type). From then on the nozzle's grams are tracked.
+- **Odometer**: a used printer can be given its existing hours / kg in Printers → Settings.
+- **Out of service**: give a reason and an expected return date. No new jobs go to it, queued jobs move elsewhere, and it shows red on the Floor. **Back in service** routes waiting work to it again. Every swap, service and fix is in the Maintenance history.
 
-### OctoPrint
-- Connection: **OctoPrint**. Address: `http://octopi.local` or its IP. API key: OctoPrint → Settings → Application Keys / API.
-- OctoPrint doesn't report layers by default. Progress is shown as a percentage, and layers are estimated if you enter the job's layer count.
-
-### Push: Bambu Lab, Prusa, anything else
-Pick **Push** when adding the printer. The Printers page then shows a token and a ready-made `curl` command. Anything that can make an HTTP request can report status: a Home Assistant automation (the Bambu Lab and PrusaLink integrations expose these values), Node-RED, or a short script on the studio PC.
+## Pricing: cost, price and margin
+The same model prices quotes, shows product margins, costs every finished job, and drives the website's instant estimate:
 
 ```
-POST /api/printers/<code or id>/telemetry
-Authorization: Bearer <printer token>
+filament   = grams × (1 + waste %) × SAR/kg            (the colour's own SAR/kg, else the material default)
+machine    = hours × (printer price ÷ life hours + upkeep SAR/h)
+power      = hours × watts ÷ 1000 × SAR/kWh
+labour     = (setup + removal × qty + post-processing × qty) min ÷ 60 × operator SAR/h
+packaging  = per job
+failure    = (filament + machine + power) × failure %
+overhead   = everything above × overhead %
+cost       = sum
+price      = max(minimum, cost × (1 + markup %)) + rush fee, + VAT, rounded up
+margin     = (price ex VAT − cost) ÷ price ex VAT
+```
+
+- **Calculator**: grams and hours from the slicer (hours empty means estimated from grams/hour), quantity, printer, post-processing minutes, markup, rush, packaging. Or type a selling price to see the margin it really makes, and the profit per printer-hour.
+- **Product margins**: every shop product's cost, margin at its current price, and the suggested price. Needs `stats.weight` (and ideally `stats.time`) in `data/products.json`.
+- **Finished jobs** get their actual cost from real grams and real print time. Jobs from paid orders also get revenue, profit and margin.
+- **Website estimate**: `/api/pricing` publishes a rate card derived from these settings, so the shop's rough price follows your costs without exposing them.
+
+## Paid orders
+Your payment provider's webhook (or your store system) sends paid orders to:
+
+```
+POST /api/orders
+Authorization: Bearer <BARA_ORDER_TOKEN>
 Content-Type: application/json
 
-{ "status": "printing",            // idle | printing | paused | done | failed | cancelled | offline   (required)
-  "progress": 0.42,                // 0–1
-  "layer": 88, "totalLayers": 210,
-  "file": "tower.gcode",           // used to match the queued job
-  "eta": 3600,                     // seconds left
-  "nozzle": { "actual": 220, "target": 220 }, "bed": { "actual": 60, "target": 60 },
-  "filamentUsedG": 41.5            // or filamentUsedMm; sent with "done" for exact stock deduction
-}
+{ "ref": "WEB-2041", "paid": true,
+  "items": [ { "productId": "tower", "material": "pla", "colour": "#F2B705", "qty": 2, "unitPrice": 89 },
+             { "title": "Meeple set", "colours": ["#F2B705", "#232327", "#E8367A"], "grams": 45 } ] }
 ```
-Send it every 5–30 seconds. A push printer that's silent for 60 s shows as offline. The response tells the agent which job it's on.
+- Only `paid: true` orders are accepted. **The same `ref` twice is ignored**, so webhook retries are safe.
+- `colour` / `colours` are matched exactly to shelf colours (the hex the shop sends). An unknown colour leaves the job unrouted with a note.
+- Most providers (Moyasar, Tap, HyperPay, Stripe, Salla, Zid…) send their own payload and signature. Put a small adapter in front that verifies the signature and maps it to the body above. Checkout itself still needs that provider (see DEPLOY.md).
 
-## API (staff)
-Everything Ops does goes through a JSON API at `/api/*`, protected by the staff session cookie. The main routes are `GET /api/state` (snapshot) and `GET /api/events` (Server-Sent Events: `printers`, `jobs`, `inventory`, `requests`). Then `/api/jobs`, `/api/filaments`, `/api/items`, `/api/printers`, `/api/requests`, `/api/movements`, `/api/users`. See `server/app.js`: each route is one line with its validation right below. To connect another system (an order system, accounting), add a route there, or read `db.json` from a backup.
+## Connecting printers
+- **Klipper / Moonraker** (Qidi, Creality K-series, Voron, Sovol, Elegoo…): address `http://<printer-ip>:7125`, then **Test connection**. API key only if Moonraker authorization is on. Reports layers and the real filament used.
+- **OctoPrint**: address and API key. Progress is a percentage; layers are estimated if the job has a layer count.
+- **Push** (Bambu, Prusa, anything else): the Printers page shows the token and a `curl` example. Send status every 5–30 s:
+
+```
+POST /api/printers/<code or id>/telemetry          Authorization: Bearer <printer token>
+{ "status": "printing",                 // idle | printing | paused | done | failed | cancelled | offline
+  "progress": 0.42, "layer": 88, "totalLayers": 210, "file": "tower.gcode", "eta": 3600,
+  "nozzle": {"actual": 220, "target": 220}, "bed": {"actual": 60, "target": 60},
+  "filamentUsedG": 41.5,                // or filamentUsedMm, with "done", for exact stock
+  "ams": [{"hex": "F2B705FF", "material": "PLA"}, null, null, null] }   // slot colours, matched to the shelf
+```
+
+## API
+Everything Ops does goes through `/api/*` (staff session cookie). `GET /api/state` returns the snapshot, and `GET /api/events` streams live changes (`printers`, `jobs`, `tasks`, `inventory`, `orders`, `requests`, `costing`). Routes live in `server/routes/`, one file per area, with validation in `server/validate.js`.

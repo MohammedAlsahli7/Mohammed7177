@@ -1,42 +1,72 @@
-:root{
-/* Paper — warm, unbleached, like natural PLA */
---paper-0:#FCFAF4;--paper-1:#F5F0E4;--paper-2:#EAE3D2;--paper-3:#D9D0BA;--paper-4:#BFB49A;
-/* Graphite — the ink. All text, borders and hard shadows. */
---graphite-950:#0D0D0F;--graphite-900:#16161A;--graphite-800:#24242A;--graphite-700:#3A3A42;--graphite-600:#55555E;--graphite-500:#74747C;--graphite-400:#9A9AA0;--graphite-300:#C2C2C6;
-/* Yolk — primary brand yellow (#F2B705). Fill colour only; never text on paper. */
---yolk-50:#FFF8DD;--yolk-100:#FFEDA8;--yolk-200:#FFDF66;--yolk-300:#FBCB2A;--yolk-500:#F2B705;--yolk-600:#D69E00;--yolk-700:#A87A00;--yolk-800:#6E5000;
-/* Material colours — every material owns one hue. Used for swatches, tags, label bands, spool art. */
---mat-pla:#E8367A;--mat-pla-tint:#FCDDE8;--mat-pla-ink:#9E1650;
---mat-petg:#12A5A0;--mat-petg-tint:#D3F0EE;--mat-petg-ink:#0A6B68;
---mat-tpu:#2F6BFF;--mat-tpu-tint:#DCE6FF;--mat-tpu-ink:#1840B0;
---mat-loop:#1F8A4C;--mat-loop-tint:#D7EFDF;--mat-loop-ink:#11592F;/* recycled — future "Bara' Loop" line */
-/* Semantic */
---success:#1F8A4C;--success-tint:#D7EFDF;
---warning:#D69E00;--warning-tint:#FFF1BF;
---danger:#D42A2A;--danger-tint:#FBDCDA;
---info:#2F6BFF;--info-tint:#DCE6FF;
-/* Aliases */
---bg-page:var(--paper-1);
---surface-card:var(--paper-0);
---surface-sunken:var(--paper-2);
---surface-raised:#FFFFFF;
---surface-inverse:var(--graphite-900);
---surface-brand:var(--yolk-500);
---fg-1:var(--graphite-900);
---fg-2:var(--graphite-700);
---fg-3:var(--graphite-500);
---fg-disabled:var(--graphite-400);
---fg-on-inverse:var(--paper-0);
---fg-on-inverse-2:var(--graphite-300);
---fg-on-brand:var(--graphite-900);
---accent:var(--yolk-500);
---accent-hover:var(--yolk-300);
---accent-press:var(--yolk-600);
---accent-tint:var(--yolk-100);
---border-ink:var(--graphite-900);
---border-1:rgba(22,22,26,.12);
---border-2:rgba(22,22,26,.22);
---focus-ring:var(--mat-tpu);
---link:var(--graphite-900);
---link-underline:var(--yolk-500);
+:root {
+  /* Paper — warm, unbleached, like natural PLA */
+  --paper-0: #fcfaf4;
+  --paper-1: #f5f0e4;
+  --paper-2: #eae3d2;
+  --paper-3: #d9d0ba;
+  --paper-4: #bfb49a;
+  /* Graphite — the ink. All text, borders and hard shadows. */
+  --graphite-950: #0d0d0f;
+  --graphite-900: #16161a;
+  --graphite-800: #24242a;
+  --graphite-700: #3a3a42;
+  --graphite-600: #55555e;
+  --graphite-500: #74747c;
+  --graphite-400: #9a9aa0;
+  --graphite-300: #c2c2c6;
+  /* Yolk — primary brand yellow (#F2B705). Fill colour only; never text on paper. */
+  --yolk-50: #fff8dd;
+  --yolk-100: #ffeda8;
+  --yolk-200: #ffdf66;
+  --yolk-300: #fbcb2a;
+  --yolk-500: #f2b705;
+  --yolk-600: #d69e00;
+  --yolk-700: #a87a00;
+  --yolk-800: #6e5000;
+  /* Material colours — every material owns one hue. Used for swatches, tags, label bands, spool art. */
+  --mat-pla: #e8367a;
+  --mat-pla-tint: #fcdde8;
+  --mat-pla-ink: #9e1650;
+  --mat-petg: #12a5a0;
+  --mat-petg-tint: #d3f0ee;
+  --mat-petg-ink: #0a6b68;
+  --mat-tpu: #2f6bff;
+  --mat-tpu-tint: #dce6ff;
+  --mat-tpu-ink: #1840b0;
+  --mat-loop: #1f8a4c;
+  --mat-loop-tint: #d7efdf;
+  --mat-loop-ink: #11592f; /* recycled — future "Bara' Loop" line */
+  /* Semantic */
+  --success: #1f8a4c;
+  --success-tint: #d7efdf;
+  --warning: #d69e00;
+  --warning-tint: #fff1bf;
+  --danger: #d42a2a;
+  --danger-tint: #fbdcda;
+  --info: #2f6bff;
+  --info-tint: #dce6ff;
+  /* Aliases */
+  --bg-page: var(--paper-1);
+  --surface-card: var(--paper-0);
+  --surface-sunken: var(--paper-2);
+  --surface-raised: #ffffff;
+  --surface-inverse: var(--graphite-900);
+  --surface-brand: var(--yolk-500);
+  --fg-1: var(--graphite-900);
+  --fg-2: var(--graphite-700);
+  --fg-3: var(--graphite-500);
+  --fg-disabled: var(--graphite-400);
+  --fg-on-inverse: var(--paper-0);
+  --fg-on-inverse-2: var(--graphite-300);
+  --fg-on-brand: var(--graphite-900);
+  --accent: var(--yolk-500);
+  --accent-hover: var(--yolk-300);
+  --accent-press: var(--yolk-600);
+  --accent-tint: var(--yolk-100);
+  --border-ink: var(--graphite-900);
+  --border-1: rgba(22, 22, 26, 0.12);
+  --border-2: rgba(22, 22, 26, 0.22);
+  --focus-ring: var(--mat-tpu);
+  --link: var(--graphite-900);
+  --link-underline: var(--yolk-500);
 }
